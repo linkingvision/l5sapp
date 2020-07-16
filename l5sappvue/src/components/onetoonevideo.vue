@@ -6,17 +6,13 @@
           </ion-toolbar>
       </ion-header> 
       <ion-content class="hello-content">
-         <ion-list class="list-content">
+         <ion-list class="list-content" lines='none'>
              <ion-list-header lines="full" class="list-header">
                  <ion-label>在线联系人</ion-label>
               </ion-list-header>  
-              <ion-item class="list-item">
+              <ion-item class="list-item" v-for="(item, index) in userdata" :key="index" button @click="itemClick($event)" detail='false' lines="full">
                 <img src="../assets/imgs/user.png" alt="">
-                <ion-label>Pokémon Yellow</ion-label>
-              </ion-item>
-              <ion-item class="list-item">
-                <img src="../assets/imgs/user.png" alt="">
-                <ion-label>Mega Man X</ion-label>
+                <ion-label>{{item.strUser}}</ion-label>
               </ion-item>
           </ion-list>
           <ion-fab vertical="bottom" 	horizontal='center' slot="fixed" class="fabfooter">
@@ -26,7 +22,7 @@
           </ion-fab>
       </ion-content>
       <ion-footer>
-          <ion-toolbar class="footer">
+         <ion-toolbar class="footer">
             <div class="footerbgc">
                  <ion-buttons class="footerbuttons">
                     <ion-button class="btnone">
@@ -43,22 +39,78 @@
                       </ion-button>
                   </ion-buttons>
              </div>
+             <div class="conectbtn">
+                <ion-item class="conectbtnitem"  @click="audioclck()" button detail='false'>
+                    <div class="audioconference"></div>
+                </ion-item>
+                <ion-item class="conectbtnitem"  @click="videoclck()" button detail='false'> 
+                     <div class="videoconference"></div>
+                </ion-item>
+             </div>
           </ion-toolbar>
       </ion-footer>
-      
   </div>
 </template>
 
 <script>
+import '../assets/js/jquery.js'
 export default {
   name: 'onetoonevideo',
   data () {
     return {
-        
+       userdata:[],
     } 
   },
-   methods: {
-     
+created(){
+   this.getuser()
+},
+ mounted(){
+    $('.conectbtn').hide()
+   console.log(this.userdata)
+},
+ methods: {
+   // 获取用户信息
+    getuser(){
+      let slideurl='http://192.168.100.142:9080';
+      let loginsession='f2b25ef8-c09f-418b-a924-42df10b6a3aa';
+      let rooturl=slideurl+"/api/v1/GetUserList?session=" +loginsession;
+      this.$http.get(rooturl).then(res=>{
+           console.log(res)
+           let useritem=res.data.users
+           if(res.status==200){
+              console.log(res.status)
+              for(let i=0;i<useritem.length;i++){
+                this.userdata.push(useritem[i])
+                console.log(res.status)
+              } 
+            }
+        }).catch(()=>console.log('promise catch err'))
+     },
+    itemClick(e){
+        if($('.fabfooter').is(':hidden')){
+           $('.fabfooter').show()
+        }else{
+           $('.fabfooter').hide()
+        }
+        if($('.conectbtn').is(':hidden')){
+           $('.conectbtn').show()
+        }else{
+           $('.conectbtn').hide()
+        }
+        if($('.footerbgc').is(':hidden')){
+           $('.footerbgc').show()
+        }else{
+           $('.footerbgc').hide()
+        }
+
+    },
+    audioclck(){
+       this.$router.push('/Audioconference')
+    },
+    videoclck(){
+       this.$router.push('/Videoconference')
+    }
+ //.......................
   }
 }
 </script>
@@ -82,8 +134,12 @@ export default {
     margin-right:20px ;
   }
   .hello-content{
+     width: 100%;
+     height: 86%;
     --background:#000000;
-  }
+    padding: 0;
+    margin: 0;
+   }
   .helo-header{
      background-color: #161616;
   }
@@ -106,11 +162,12 @@ export default {
   .list-item{
      --background:#191919;
      --color:#FFFFFF;
-  }
+     --color-activated:#1362FF;
+   }
   .footer{
      --background:#000000;
      --border-color:#000000;
-  }
+   }
   .footerbgc{
      width: 100%;
      height: 56px;
@@ -137,6 +194,7 @@ export default {
  }
   .fabfooter{
     bottom: -32px;
+    /* display: none; */
   }
   .fabfooterbtn{
     --background:transparent;
@@ -149,4 +207,37 @@ export default {
     height: 100%;
     margin-right:8px;
  }
- </style>
+ .conectbtn{
+    display: none;
+ }
+ .conectbtnToglle{
+    display: block;
+ }
+ .fabconectbtn{
+    width:100%;
+    height: 100%;
+ }
+ .audioconference{
+     width: 100%;
+     height: 100%;
+     background: url('../assets/imgs/andiocofer.png') no-repeat;
+     background-size:100% 100%;
+ }
+.conectbtnitem{
+     /* height: 110px; */
+     --padding-start:0;
+     --padding-end:0;
+     --inner-padding-end:0;
+     --background:transparent;
+     --color-activated:#1362FF;
+     /* --background-activated:#1362FF; */
+ }
+  .videoconference{
+     width: 100%;
+     height: 100%;
+     background: url('../assets/imgs/videoconfer.png') no-repeat;
+     background-size:100% 100%;
+ }
+
+
+</style>
