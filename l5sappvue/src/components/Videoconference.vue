@@ -11,28 +11,29 @@
                            </ion-label>
                         </ion-col>
                        <ion-col>
-                          <ion-button class="videobutton">
+                          <ion-button class="videobutton" href="#/" component="Onetoonevideo">
                               <ion-label shape="round">离开</ion-label>
-                          </ion-button>
+                           </ion-button>
                        </ion-col>
                   </ion-row>
                   <ion-row>
                       <ion-col>
-                           <video src=""></video>
+                            <video id="h5sVideoRemote" src="" class="intercomvideoplay"></video>
+                            <video id="h5sVideoLocal" muted src="" style="width:50px;height:50px"></video>
                       </ion-col>
                   </ion-row>
              </ion-grid>
              <!-- 要是提醒 -->
-             <ion-fab vertical="center" horizontal="start" slot="fixed" class="notifications">
+             <!-- <ion-fab vertical="center" horizontal="start" slot="fixed" class="notifications">
                 <ion-chip class="notificationsbtn">
                     <ion-avatar>
                     <img src="https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y">
                     </ion-avatar>
                     <ion-label>重要提醒</ion-label>
                 </ion-chip>
-             </ion-fab>
+             </ion-fab> -->
               <!-- 消息 -->
-             <ion-fab vertical="center" horizontal="start" slot="fixed">
+             <!-- <ion-fab vertical="center" horizontal="start" slot="fixed">
                 <ion-item class="important" lines='none'>
                       <ion-avatar>
                         <img src="https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y">
@@ -43,7 +44,7 @@
                             </ion-text>
                         </ion-label>
                 </ion-item>
-             </ion-fab>
+             </ion-fab> -->
               <!-- 点对点视频界面 -->
              <ion-fab vertical="bottom" horizontal="start" slot="fixed" class="vieoone" >
                 <ion-item class="vieoonetoone" lines='none'>
@@ -76,8 +77,58 @@
 </template>
 
 <script>
+import '../assets/js/adapter.js'
+import '../assets/js/platform.js'
+import '../assets/js/h5splayerhelper.js'
+import '../assets/css/h5splayer.css'
+import {H5siOS,H5sPlayerCreate} from '../assets/js/h5splayerhelper.js'
+import {H5sPlayerWS,H5sPlayerHls,H5sPlayerRTC,H5sRTCGetCapability,H5sPlayerAudBack,H5sConference} from '../assets/js/h5splayer.js'
 export default {
-
+  name: 'Videoconference',
+  data () {
+    return {
+       v1:undefined,
+       h5handler:undefined,
+    } 
+  } ,
+  mounted(){
+    $('.conectbtn').hide()
+    console.log(this.userdata)
+    this.tallbackConferen()
+     var _this=this
+        _this.$root.bus.$on('meettoken', function(token){
+            console.log("播放",token)
+          //   _this.usertoken=token
+            _this.tallbackConferen(token)
+            // _this.myModal=true;
+        });
+  },
+  methods:{
+    tallbackConferen(token){
+          var session='a26019f4-e33e-4c4c-a9ac-59e218010904';
+         if (this.h5handler != undefined)
+            {
+                this.h5handler.disconnect();
+                delete this.h5handler;
+                this.h5handler = undefined;
+            }
+            // console.log(playid,token,streamprofile)
+            let conf = {
+                videoid:"h5sVideoRemote",
+                protocol: 'http', //http: or https:
+                host: '192.168.100.142:9080', //localhost:8080
+                streamprofile: "main", // {string} - stream profile, main/sub or other predefine transcoding profile
+                rootpath: '/', // '/'
+                token: this.usertoken,
+                hlsver: 'v1', //v1 is for ts, v2 is for fmp4
+                session: token //session got from login
+            };
+            console.log("播放",conf);
+            this.h5handler = new H5sPlayerRTC(conf);
+            this.h5handler.connect();
+       },
+     
+   }
 }
 </script>
 

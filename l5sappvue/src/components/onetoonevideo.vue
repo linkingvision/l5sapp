@@ -12,7 +12,7 @@
               </ion-list-header>  
               <ion-item class="list-item" v-for="(item, index) in userdata" :key="index" button @click="itemClick($event)" detail='false' lines="full">
                 <img src="../assets/imgs/user.png" alt="">
-                <ion-label>{{item.strUser}}</ion-label>
+                <ion-label>{{item.strName}}</ion-label>
               </ion-item>
           </ion-list>
           <ion-fab vertical="bottom" 	horizontal='center' slot="fixed" class="fabfooter">
@@ -20,6 +20,7 @@
                    <img src="../assets/imgs/middleimg.png" alt="">
                 </ion-fab-button>
           </ion-fab>
+          <ion-butto></ion-butto>
       </ion-content>
       <ion-footer>
          <ion-toolbar class="footer">
@@ -54,44 +55,45 @@
 
 <script>
 import '../assets/js/jquery.js'
+import '../assets/js/jQuery.md5.js'
+import {H5sEvent} from '../assets/js/h5sevent.js'
+import '../assets/js/adapter'
+import uuid from '../assets/js/uuid1'
+import {H5sPlayerRTC,H5sRTCGetCapability,H5sRTCPush} from '../assets/js/h5splayer.js'
 export default {
   name: 'onetoonevideo',
   data () {
     return {
        userdata:[],
+       usertoken:'',
     } 
   },
 created(){
-   this.getuser()
+   
 },
  mounted(){
     $('.conectbtn').hide()
    console.log(this.userdata)
-},
+   this.getuser()
+   this.videoConferen()
+  },
  methods: {
    // 获取用户信息
     getuser(){
       let slideurl='http://192.168.100.142:9080';
-      let loginsession='f2b25ef8-c09f-418b-a924-42df10b6a3aa';
-      let rooturl=slideurl+"/api/v1/GetUserList?session=" +loginsession;
+      let loginsession='a26019f4-e33e-4c4c-a9ac-59e218010904';
+      let rooturl=slideurl+"/api/v1/GetOnlineUserList?session=" +loginsession;
       this.$http.get(rooturl).then(res=>{
            console.log(res)
-           let useritem=res.data.users
+           let useritem=res.data.userList
            if(res.status==200){
-              console.log(res.status)
               for(let i=0;i<useritem.length;i++){
                 this.userdata.push(useritem[i])
-                console.log(res.status)
               } 
             }
         }).catch(()=>console.log('promise catch err'))
      },
     itemClick(e){
-        if($('.fabfooter').is(':hidden')){
-           $('.fabfooter').show()
-        }else{
-           $('.fabfooter').hide()
-        }
         if($('.conectbtn').is(':hidden')){
            $('.conectbtn').show()
         }else{
@@ -99,16 +101,51 @@ created(){
         }
         if($('.footerbgc').is(':hidden')){
            $('.footerbgc').show()
+          $('.fabfooter').show()
         }else{
            $('.footerbgc').hide()
+           $('.fabfooter').hide()
         }
-
     },
+   videoConferen(){
+          var strSession='a26019f4-e33e-4c4c-a9ac-59e218010904';
+          var _this=this
+          var conf1 = {
+               protocol: 'http:', //http: or https:
+               host: '192.168.100.142:9080', //localhost:8080
+               rootpath:'/', // '/'
+               // callback:this.EventCB, 
+               userdata: null, // user data
+               session: strSession, //session got from login
+               consolelog: 'true' // 'true' or 'false' enable/disable console.log
+          };
+               var e1 = new H5sEvent(conf1);
+               e1.connect();
+     },
+
     audioclck(){
        this.$router.push('/Audioconference')
-    },
+      },
     videoclck(){
-       this.$router.push('/Videoconference')
+        var token = uuid(4, 10);
+            this.usertoken=token
+            var starfs=new Date().getTime();
+            var endds=new Date().getTime();
+            var ks=new Date(starfs).toISOString()+"08:00";
+            var jss=new Date(endds).toISOString()+"08:00";
+             this.$root.bus.$emit('meettoken',this.usertoken );
+            var url ='http:'+'//'+ '192.168.100.142:9080'+ "/api/v1/OnetoOneConference?name="
+            +"admin"+"&token="
+            +token+"&begintime="
+            +ks+"&endtime="
+            +jss+"&user="
+            +'admin'+"&session="+'a26019f4-e33e-4c4c-a9ac-59e218010904';
+            this.$http.get(url).then(result=>{
+                console.log(result)
+               //  this.l5svideplay();
+                this.$router.push('/Videoconference')
+         })
+      
     }
  //.......................
   }
@@ -134,11 +171,14 @@ created(){
     margin-right:20px ;
   }
   .hello-content{
-     width: 100%;
-     height: 86%;
+    width: 100%;
+    height: 86%;
     --background:#000000;
     padding: 0;
     margin: 0;
+    --padding-start:0;
+    --padding-top:0;
+    --padding-bottom:0;
    }
   .helo-header{
      background-color: #161616;
