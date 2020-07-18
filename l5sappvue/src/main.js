@@ -4,6 +4,7 @@ import Vue from 'vue'
 import App from './App'
 import axios from 'axios'
 import router from './router'
+import vuex from './vuex'
 import Ionic from '@ionic/vue';
 import './assets/js/jquery.js';
 // import $ from 'jquery'
@@ -19,6 +20,7 @@ new Vue({
   data:{
      bus
   },
+  vuex,
   components: { App },
   template: '<App/>'
 })

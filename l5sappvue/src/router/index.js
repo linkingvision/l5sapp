@@ -1,5 +1,6 @@
 import Vue from 'vue'
 // import Router from 'vue-router'
+import Loginin from '@/components/loginin'
 import Onetoonevideo from '@/components/onetoonevideo'
 import Audioconference from '@/components/Audioconference'
 import Videoconference from '@/components/Videoconference'
@@ -11,6 +12,16 @@ export default new IonicVueRouter({
   routes: [
     {
       path: '/',
+      redirect: '/Login',
+      component: Loginin 
+    },
+    {
+      path: '/Login',
+      name: 'Loginin ',
+      component: Loginin 
+    },
+    {
+      path: '/Onetoonevideo',
       name: 'Onetoonevideo ',
       component: Onetoonevideo 
     },
