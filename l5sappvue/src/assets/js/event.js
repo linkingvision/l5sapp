@@ -1,8 +1,7 @@
-import {H5sEvent} from './h5sevent.js'
-import store from '../../store/index'
 
-//console.log("+++++++++++",store.state.Useport)
-var callport=store.state.Useport;
+   
+import {H5sEvent} from '../assets/js/h5sevent.js'
+import store from '@/store'
 let gEvent=[];
 var e1=undefined;
 function EventCB(event, userdata)
@@ -13,30 +12,28 @@ function EventCB(event, userdata)
             Type: msgevent.type,
             UUID:msgevent.strUUID,
             Time:msgevent.strTime,
-            Detail:event,
+            Detail:event
         };
-    gEvent.push(timeitem);
-    //console.log("////////////",msgevent)
+    gEvent=msgevent;
+    console.log("*******",gEvent,msgevent)
 }
 function events(){
-    
-    var wsroot = callport.ip+":"+callport.port;
-    if (wsroot == undefined)
-    {
-        wsroot = this.$store.state.Useport.ip+":"+this.$store.state.Useport.port;
+    console.log("*******1")
+    if(store.state.token==null){
+        return false;
     }
-    //console.log("wsroot",wsroot,window.location.protocol);
     var conf1 = {
-        protocol: "http:", //http: or https:
-        host:wsroot, //localhost:8080
+        protocol: window.location.protocol, //http: or https:
+        host:store.state.WSROOT, //localhost:8080
         rootpath:'/', // '/'
         callback: EventCB, 
         userdata: null, // user data
-        session: "session" //session got from login
+        session: store.state.token //session got from login
     };
+    
+    console.log("*******2",conf1)
     e1 = new H5sEvent(conf1);
-    //console.log("wsroot",conf1);
     e1.connect();
 }
 events();
-export default{event,gEvent}
+export default{gEvent}

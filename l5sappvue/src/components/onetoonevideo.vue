@@ -6,11 +6,12 @@
           </ion-toolbar>
       </ion-header> 
       <ion-content class="hello-content">
+         <eventLists></eventLists>
          <ion-list class="list-content" lines='none'>
              <ion-list-header lines="full" class="list-header">
                  <ion-label>在线联系人</ion-label>
               </ion-list-header>  
-              <ion-item class="list-item" v-for="(item, index) in userdata" :key="index" button @click="itemClick($event)" detail='false' lines="full">
+              <ion-item class="list-item" v-for="(item, index) in userdata" :key="index" button @click="itemClick(item)" detail='false' lines="full">
                 <img src="../assets/imgs/user.png" alt="">
                 <ion-label>{{item.strName}}</ion-label>
               </ion-item>
@@ -50,105 +51,93 @@
              </div>
           </ion-toolbar>
       </ion-footer>
+      
   </div>
 </template>
 
 <script>
-import '../assets/js/jquery.js'
-import '../assets/js/jQuery.md5.js'
-import {H5sEvent} from '../assets/js/h5sevent.js'
 import '../assets/js/adapter'
 import uuid from '../assets/js/uuid1'
 import {H5sPlayerRTC,H5sRTCGetCapability,H5sRTCPush} from '../assets/js/h5splayer.js'
+import {H5sEvent} from '../assets/js/h5sevent.js'
 export default {
   name: 'onetoonevideo',
   data () {
     return {
        userdata:[],
        usertoken:'',
+       uservalue:'',
+       el:undefined,
     } 
   },
 created(){
-   
+ 
 },
- mounted(){
+mounted(){
+
     $('.conectbtn').hide()
-   console.log(this.userdata)
-   this.getuser()
-   this.videoConferen()
+    console.log(this.userdata)
+    this.getuser()
+    console.log( this.$store.state.Useport.psw)
   },
  methods: {
    // 获取用户信息
     getuser(){
-      let slideurl='http://192.168.100.142:9080';
-      let loginsession='a26019f4-e33e-4c4c-a9ac-59e218010904';
-      let rooturl=slideurl+"/api/v1/GetOnlineUserList?session=" +loginsession;
+      let slideurl=this.$store.state.callport;
+      let rooturl=slideurl+"/api/v1/GetOnlineUserList?session=" +this.$store.state.token;
+      console.log(rooturl)
       this.$http.get(rooturl).then(res=>{
            console.log(res)
            let useritem=res.data.userList
            if(res.status==200){
               for(let i=0;i<useritem.length;i++){
-                this.userdata.push(useritem[i])
-              } 
-            }
+              if(this.$store.state.Useport.user==useritem[i].strName){
+                   continue
+               }
+              this.userdata.push(useritem[i])
+            } 
+          }
         }).catch(()=>console.log('promise catch err'))
+     
      },
     itemClick(e){
-        if($('.conectbtn').is(':hidden')){
-           $('.conectbtn').show()
-        }else{
-           $('.conectbtn').hide()
-        }
-        if($('.footerbgc').is(':hidden')){
-           $('.footerbgc').show()
-          $('.fabfooter').show()
-        }else{
-           $('.footerbgc').hide()
-           $('.fabfooter').hide()
-        }
+         console.log(e)
+         let currentuser=e.strName
+         this.uservalue=currentuser
+         if($('.conectbtn').is(':hidden')){
+            $('.conectbtn').show()
+         }else{
+            $('.conectbtn').hide()
+         }
+         if($('.footerbgc').is(':hidden')){
+            $('.footerbgc').show()
+            $('.fabfooter').show()
+         }else{
+            $('.footerbgc').hide()
+            $('.fabfooter').hide()
+         }
     },
-   videoConferen(){
-          var strSession='a26019f4-e33e-4c4c-a9ac-59e218010904';
-          var _this=this
-          var conf1 = {
-               protocol: 'http:', //http: or https:
-               host: '192.168.100.142:9080', //localhost:8080
-               rootpath:'/', // '/'
-               // callback:this.EventCB, 
-               userdata: null, // user data
-               session: strSession, //session got from login
-               consolelog: 'true' // 'true' or 'false' enable/disable console.log
-          };
-               var e1 = new H5sEvent(conf1);
-               e1.connect();
-     },
-
     audioclck(){
-       this.$router.push('/Audioconference')
-      },
+         let audioVlue=this.uservalue
+         this.$root.bus.$emit('audiocurrent', audioVlue)
+         this.$router.push('/Audioconference')
+    },
     videoclck(){
-        var token = uuid(4, 10);
-            this.usertoken=token
-            var starfs=new Date().getTime();
-            var endds=new Date().getTime();
-            var ks=new Date(starfs).toISOString()+"08:00";
-            var jss=new Date(endds).toISOString()+"08:00";
-             this.$root.bus.$emit('meettoken',this.usertoken );
-            var url ='http:'+'//'+ '192.168.100.142:9080'+ "/api/v1/OnetoOneConference?name="
-            +"admin"+"&token="
-            +token+"&begintime="
-            +ks+"&endtime="
-            +jss+"&user="
-            +'admin'+"&session="+'a26019f4-e33e-4c4c-a9ac-59e218010904';
-            this.$http.get(url).then(result=>{
-                console.log(result)
-               //  this.l5svideplay();
-                this.$router.push('/Videoconference')
-         })
-      
-    }
- //.......................
-  }
+         let videoVlue=this.uservalue
+         console.log(videoVlue)
+         this.$root.bus.$emit('videocurrent', videoVlue)
+         this.$router.push('/Videoconference')
+    },
+     //
+   },
+  beforeDestroy() {
+      if (this.e1 != undefined)
+         {
+         this.e1.disconnect();
+         delete this.e1;
+         this.e1 = undefined;
+      }
+   },
 }
 </script>
 

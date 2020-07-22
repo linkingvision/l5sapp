@@ -182,4 +182,5 @@ H5sEvent.prototype.disconnect = function() {
 	}
 	if(this._debug === true) console.log("disconnect", this);
 } 
+
 export {H5sEvent}

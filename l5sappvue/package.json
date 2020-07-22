@@ -10,8 +10,11 @@
     "build": "node build/build.js"
   },
   "dependencies": {
+    "@ionic/core": "^5.2.3",
+    "@ionic/vue": "0.0.4",
     "ajv": "^6.12.3",
     "axios": "^0.19.2",
+    "jquery": "^3.5.1",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1",
     "vuex": "^3.5.1"

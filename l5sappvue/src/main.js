@@ -4,12 +4,14 @@ import Vue from 'vue'
 import App from './App'
 import axios from 'axios'
 import router from './router'
-import vuex from './vuex'
+import store from './vuex'
 import Ionic from '@ionic/vue';
-import './assets/js/jquery.js';
+import 'jquery'
 // import $ from 'jquery'
 import '@ionic/core/css/ionic.bundle.css';
+import eventLists from '@/components/commonvue/index'
 Vue.use(Ionic);
+Vue.use(eventLists);
 Vue.config.productionTip = false
 Vue.prototype.$http = axios
 const bus = new Vue()
@@ -20,7 +22,7 @@ new Vue({
   data:{
      bus
   },
-  vuex,
+  store,
   components: { App },
   template: '<App/>'
 })

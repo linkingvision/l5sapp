@@ -16,7 +16,7 @@
                             <img src="../assets/imgs/user.png" alt="">
                             <ion-input  placeholder="请输入密码" type='password' :value='Useport.psw'  @ionChange="Useport.psw=$event.target.value"></ion-input>
                        </ion-item>
-                       <ion-item color='#42b983' class="serveconfig" lines="none" @click="dropdown">
+                       <ion-item color='#42b983' class="serveconfig" lines="none">
                             <ion-label>服务器配置</ion-label>
                             <img src="../assets/imgs/user.png" alt="">
                         </ion-item>
@@ -37,31 +37,68 @@
 </template>
 
 <script>
-// import '../assets/js/jQuery.md5.js'
+import '../assets/js/jQuery.md5'
+import {H5sEvent} from '../assets/js/h5sevent.js'
+import * as types from '@/vuex/types'
 export default {
    props: {
         timeout: { type: Number, default: 1000 },
     },
    name: 'Login',
-     data(){
-    return{
-    Useport:[{
-        ip:'',
-        port:'',
-        user:'',
-        psw:''
-        }],//端口号
-     protocol:'',
+    data(){
+      return{
+      callport:this.$store.state.callport,//使用端口号
+      Useport:[{
+          ip:'',
+          port:'',
+          user:'',
+          psw:''
+          }],//端口号
+      protocol:'https:',
+      v1:undefined,
+      h5handler:undefined,
     }
   },
+    created(){
+      this.getStorage()
+  },
     mounted(){
-      
+    
   },
     methods: {
      loginin(){
-        this.$router.push('/Onetoonevideo');
-        this.presentLoading()
-     },
+        //储存登录信息
+        let username=this.Useport.user
+        let password=this.Useport.psw
+        let Ip=this.Useport.ip
+        let Port=this.Useport.port
+        // 调用储存方法
+        this.setStorage(username,password,Ip,Port)
+        // 调用储存vuex
+        this.$store.commit(types.USEPORTIP, this.Useport.ip)
+        this.$store.commit(types.USEPORTPORT, this.Useport.port);
+        this.$store.commit(types.USEPORTUSER, this.Useport.user);
+        this.$store.commit(types.USEPORTPSW, this.Useport.psw);
+        this.$store.commit(types.PROTOCOL, this.protocol);
+        let _this=this
+        _this.presentLoading()
+        let root=process.env.VUE_APP_URL;
+        if (root == undefined){
+        root = _this.protocol+ "//"+_this.Useport.ip+":"+_this.Useport.port
+        _this.callport=root;
+        this.$store.commit(types.USEPORT, root);
+        }
+        let loginurl = root + "/api/v1/Login?user=" +_this.Useport.user + "&password=" + $.md5(_this. Useport.psw);
+        console.log(loginurl)
+        this.$http.get(loginurl).then(res => {
+            console.log(res)
+            var data = res.data;
+            if (data.bStatus == true){
+            this.$store.commit(types.LOGIN, data["strSession"]);
+            _this.$router.push('/Onetoonevideo');
+          }
+        }).catch((err)=>{console.log(1)})
+      },
       // 懒加载
      presentLoading() {
         return this.$ionic.loadingController
@@ -76,7 +113,25 @@ export default {
           return loading.present()
         })
     },
-  }
+      //历史记录存储localstorage
+     setStorage(username,password,Ip,Port){
+        let loginfo=[ username, password, Ip, Port]
+        localStorage.setItem("h5sappuser",JSON.stringify(loginfo))
+     },
+      // 取值
+     getStorage(){
+        let login= JSON.parse(localStorage.getItem("h5sappuser"))
+        console.log(login)
+        if(login.length>0){
+           for(var i=0;i<login.length;i++){
+           this.Useport.user=login[0];
+           this.Useport.psw=login[1]
+           this.Useport.ip=login[2]
+           this.Useport.port=login[3]
+           }
+           }else{console.log('无历史数据')}
+      },
+   }
 }
 </script>
 
@@ -92,10 +147,10 @@ export default {
      background-size:100% 100%;
  }
  .loginmain{
-   width:100%;
-   position: absolute;
-   top:50%;
-   transform: translateY(-50%);
+     width:100%;
+     position: absolute;
+     top:50%;
+     transform: translateY(-50%);
  }
  .logo{
      width:50px;
