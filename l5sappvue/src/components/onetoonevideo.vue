@@ -123,10 +123,15 @@ mounted(){
          this.$router.push('/Audioconference')
     },
     videoclck(){
-         let videoVlue=this.uservalue
-         console.log(videoVlue)
-         this.$root.bus.$emit('videocurrent', videoVlue)
-         this.$router.push('/Videoconference')
+         	this.$router.push({
+							name: `Videoconference`,
+							path: 'Videoconference',
+							params: {
+						   videoVlue:this.uservalue
+				     }
+			    })
+         // this.$root.bus.$emit('videocurrent', videoVlue)
+         // this.$router.push('/Videoconference')
     },
      //
    },

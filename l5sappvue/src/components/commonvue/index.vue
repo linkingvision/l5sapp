@@ -1,6 +1,11 @@
 <template>
    <div class="">
-       
+       <!-- <div class="tankuang">
+           <h1>会议通知</h1>
+           <p>是否加入视频会议？</p>
+            <button @click="yes()">是</button>
+            <button @click="no()">否</button>
+       </div> -->
    </div>
 </template>
 
@@ -30,10 +35,11 @@ export default {
         //  this.EventCB
    },
    mounted(){
+      $('.tankuang').hide()
       this.videoConferen()  
   },
    methods:{
-      // 视频播放
+    // 视频播放
     //播放
 		l5svideplay(){
 			 if(this.meettoken!=undefined){
@@ -47,8 +53,8 @@ export default {
 							}
 						})
 					}else{   
-						this.$root.bus.$emit('meettoken', this.meettoken);
-					}
+            this.$root.bus.$emit('meettoken', this.meettoken);
+          }
 					console.log(this.$router.history.current.name)
 				}
 		 },
@@ -108,12 +114,12 @@ export default {
                 this.meettoken=msgevent.sendConference.token;
                 console.log("****",msgevent)
                 this.presentAlertConfirm()
-			}else if(msgevent.type=="H5S_EVENT_START_SHARE_DESKTOP"){
-				this.sharedstart=msgevent.shareDesktop.token;
-				console.log("****",msgevent)
+      }else if(msgevent.type=="H5S_EVENT_START_SHARE_DESKTOP"){
+				        // this.sharedstart=msgevent.shareDesktop.token;
+				        // console.log("****",msgevent)
 			}else if(msgevent.type=="H5S_EVENT_STOP_SHARE_DESKTOP"){
-				this.sharedstop=msgevent.stopShareDesktop.token;
-				console.log("****",msgevent)
+				        // this.sharedstop=msgevent.stopShareDesktop.token;
+			        	// console.log("****",msgevent)
 			}	
 		},
     }
@@ -130,4 +136,13 @@ export default {
 .my-custom-class {
   --background: #e5e5e5;
 } 
+.tankuang{
+  width:200px;
+  height:200px;
+  background-color: rgb(117, 116, 116);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+}
 </style>

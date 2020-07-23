@@ -5,22 +5,23 @@
                <ion-row>
                    <ion-col size="10" offset="1" class="col-content">
                        <ion-item lines="none" color='#42b983'><div class="logo"></div></ion-item>
-                       <ion-toolbar>
-                          <ion-title>L5s会议视频平台</ion-title>
+                       <ion-toolbar color='#42b983' class="toobar">
+                          <ion-title><img src="../assets/imgs/l5sconfer.png" alt=""></ion-title>
+                           <!-- <img src="../assets/imgs/l5sconfer.png" alt=""> -->
                        </ion-toolbar>
-                       <ion-item color='#42b983'>
-                            <img src="../assets/imgs/user.png" alt="">
+                       <ion-item color='#42b983' class="loginItem">
+                            <img src="../assets/imgs/loginuser.png" alt="">
                             <ion-input  placeholder="请输入用户名" :value='Useport.user'  @ionChange="Useport.user=$event.target.value"></ion-input>
                        </ion-item>
-                       <ion-item color='#42b983' class="username">
-                            <img src="../assets/imgs/user.png" alt="">
+                       <ion-item color='#42b983' class="loginItem">
+                            <img src="../assets/imgs/loginPassword.png" alt="">
                             <ion-input  placeholder="请输入密码" type='password' :value='Useport.psw'  @ionChange="Useport.psw=$event.target.value"></ion-input>
                        </ion-item>
-                       <ion-item color='#42b983' class="serveconfig" lines="none">
+                       <ion-item color='#42b983' class="loginItem" lines="none">
                             <ion-label>服务器配置</ion-label>
                             <img src="../assets/imgs/user.png" alt="">
                         </ion-item>
-                       <ion-item color='#42b983'>
+                       <ion-item color='#42b983' class="loginItem">
                              <ion-input  placeholder="请输入IP" :value='Useport.ip' @ionChange="Useport.ip=$event.target.value"></ion-input>
                              <ion-input  placeholder="端口"  :value='Useport.port'  @ionChange="Useport.port=$event.target.value"></ion-input>
                        </ion-item>
@@ -143,7 +144,7 @@ export default {
  .loginbacground{
      width:100%;
      height: 100%;
-     background: url('../assets/imgs/login_back.png') no-repeat;
+     background: url('../assets/imgs/loginbacground.png') no-repeat;
      background-size:100% 100%;
  }
  .loginmain{
@@ -155,7 +156,7 @@ export default {
  .logo{
      width:50px;
      height:50px;
-     background: url('../assets/imgs/user.png') no-repeat;
+     background: url('../assets/imgs/l5slogo.png') no-repeat;
      background-size:100% 100%;
      margin: 0 auto;
  }
@@ -163,6 +164,7 @@ export default {
      display: block;
      width:25px;
      height: 25px;
+     margin-right:10px;
  }
  .loginbutton{
      width:210px;
@@ -170,5 +172,15 @@ export default {
      margin: 0 auto;
      --background:#0F7EFE ;
      margin-top: 50px ;
+ }
+ .toobar img{
+     display:block ;
+     width:200px;
+     height:26px;
+     margin:0 auto;
+ }
+ .loginItem{
+     --border-color:#FFFFFF;
+     color:#FFFFFF;
  }
 </style>
