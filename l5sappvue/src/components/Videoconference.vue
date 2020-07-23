@@ -119,6 +119,7 @@ export default {
             this.v1.disconnect();
             delete this.v1;
             this.v1 = undefined;
+            alert('aa')
             // $("#h5sVideoLocal").get(0).load();
         }
       },
@@ -132,13 +133,18 @@ export default {
           if(_this.usertoken!=undefined){
             console.log("播放",this.usertoken)
             _this.l5svideplay()
+           
+          }
+          if(this.$route.params.videoVlue!==undefined){
+              let playVlue=this.$route.params.videoVlue
+               _this.videocall(playVlue)
           }
         //  在本页面传过来拨打的值
          _this.$root.bus.$on('meettoken', function(token){
             console.log("播放",token)
             _this.usertoken=token
             _this.l5svideplay()
-          });
+         });
 
            _this.$root.bus.$on('audiocurrent', function(audioVlue){
                console.log(audioVlue)
@@ -151,7 +157,7 @@ export default {
   },
   methods:{
       //视频对讲
-       videocall(videoVlue){
+       videocall(playVlue){
           var token = uuid(4, 10);
           this.usertoken=token
           this.$store.commit(types.USERTOKEN, token)
@@ -165,7 +171,7 @@ export default {
           +token+"&begintime="
           +ks+"&endtime="
           +jss+"&user="
-          +videoVlue+"&session="+ this.$store.state.token;
+          +playVlue+"&session="+ this.$store.state.token;
           this.$http.get(url).then(res=>{
                console.log(res)
                this.l5svideplay();
@@ -174,7 +180,7 @@ export default {
            //播放视频
        l5svideplay(){
           if (this.h5handler != undefined)
-          {
+          {    alert('8')
                this.h5handler.disconnect();
                delete this.h5handler;
                this.h5handler = undefined;
@@ -191,8 +197,11 @@ export default {
                session: this.$store.state.token //session got from login
           };
             console.log("播放",conf);
+            
             this.h5handler = new H5sPlayerRTC(conf);
+         
             this.h5handler.connect( );
+            
             // this.connection()
          },
            //开启视频
@@ -220,6 +229,7 @@ export default {
                 };
                 // return false
                 this.v1 = new H5sRTCPush(conf1);
+                console.log(conf1)
                 console.log("*******",this.VideoCodec,"1*",
                     this.VideoIn,"2*",
                     this.Bitratess,"5*",
