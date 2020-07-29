@@ -18,7 +18,7 @@
                   </ion-row>
                   <ion-row>
                       <ion-col class="colvideo">
-                            <video id="h5sVideoRemote" src="" class="intercomvideoplay" autoplay webkit-playsinline playsinline></video>
+                            <video id="h5sVideoRemote" src="" class="intercomvideoplay" autoplay webkit-playsinline playsinline style= "object-fit: fill;"></video>
                             <video id="h5sVideoLocal" muted src="" autoplay class="h5sLocal" webkit-playsinline playsinline></video>
                       </ion-col>
                   </ion-row>
@@ -119,8 +119,7 @@ export default {
             this.v1.disconnect();
             delete this.v1;
             this.v1 = undefined;
-            alert('aa')
-            // $("#h5sVideoLocal").get(0).load();
+           // $("#h5sVideoLocal").get(0).load();
         }
       },
   created(){
@@ -145,16 +144,7 @@ export default {
             _this.usertoken=token
             _this.l5svideplay()
          });
-
-           _this.$root.bus.$on('audiocurrent', function(audioVlue){
-               console.log(audioVlue)
-          });
-          _this.$root.bus.$on('videocurrent', function(videoVlue){
-               console.log(videoVlue)
-              _this.videocall(videoVlue)
-        });
-          
-  },
+     },
   methods:{
       //视频对讲
        videocall(playVlue){
@@ -180,7 +170,7 @@ export default {
            //播放视频
        l5svideplay(){
           if (this.h5handler != undefined)
-          {    alert('8')
+          {    
                this.h5handler.disconnect();
                delete this.h5handler;
                this.h5handler = undefined;
@@ -198,8 +188,7 @@ export default {
           };
             console.log("播放",conf);
             
-            this.h5handler = new H5sPlayerRTC(conf);
-         
+            this.h5handler = new H5sPlayerWS(conf);
             this.h5handler.connect( );
             
             // this.connection()
@@ -430,5 +419,8 @@ export default {
 .h5sLocal{
      display: none;
 }
-
+.intercomvideoplay{
+     width:100%;
+     /* height:50px; */
+}
 </style>>

@@ -25,7 +25,7 @@
       </ion-content>
       <ion-footer>
          <ion-toolbar class="footer">
-            <div class="footerbgc">
+            <!-- <div class="footerbgc">
                  <ion-buttons class="footerbuttons">
                     <ion-button class="btnone">
                         <img src="../assets/imgs/footerfirst.png" alt="">
@@ -40,7 +40,8 @@
                           <img src="../assets/imgs/yonghu-8@2x.png" alt="">
                       </ion-button>
                   </ion-buttons>
-             </div>
+             </div> -->
+             <footertabs></footertabs>
              <div class="conectbtn">
                 <ion-item class="conectbtnitem"  @click="audioclck()" button detail='false'>
                     <div class="audioconference"></div>

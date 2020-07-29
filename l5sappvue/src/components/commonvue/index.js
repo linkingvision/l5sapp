@@ -8,4 +8,4 @@ const eventLists={
       Vue.component('eventLists', Event)
    }
 }
-export default eventLists
+export default  eventLists;

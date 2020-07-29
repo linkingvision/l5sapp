@@ -98,7 +98,7 @@ export default {
             this.$store.commit(types.LOGIN, data["strSession"]);
             _this.$router.push('/Onetoonevideo');
           }
-        }).catch((err)=>{console.log(1)})
+        }).catch((err)=>{console.log(err)})
       },
       // 懒加载
      presentLoading() {

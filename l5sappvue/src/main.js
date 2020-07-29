@@ -10,8 +10,11 @@ import 'jquery'
 // import $ from 'jquery'
 import '@ionic/core/css/ionic.bundle.css';
 import eventLists from '@/components/commonvue/index'
+import footertabs from '@/components/commonvue/footercommon.js'
+import 'lib-flexible/flexible'
 Vue.use(Ionic);
 Vue.use(eventLists);
+Vue.use(footertabs);
 Vue.config.productionTip = false
 Vue.prototype.$http = axios
 const bus = new Vue()

@@ -40,7 +40,6 @@ export default {
   },
    methods:{
     // 视频播放
-    //播放
 		l5svideplay(){
 			 if(this.meettoken!=undefined){
 					if(this.$router.history.current.name!="Videoconference"){

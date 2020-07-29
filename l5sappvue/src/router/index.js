@@ -4,6 +4,7 @@ import Loginin from '@/components/loginin'
 import Onetoonevideo from '@/components/onetoonevideo'
 import Audioconference from '@/components/Audioconference'
 import Videoconference from '@/components/Videoconference'
+import Conference from '@/components/conference'
 import { IonicVueRouter } from '@ionic/vue'
 
 Vue.use(IonicVueRouter)
@@ -34,6 +35,11 @@ export default new IonicVueRouter({
       path: '/Videoconference',
       name: 'Videoconference',
       component: Videoconference
+    },
+    {
+      path: '/Conference',
+      name: 'Conference',
+      component: Conference
     }
   ]
 })
