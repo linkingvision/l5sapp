@@ -16,12 +16,6 @@
                 <ion-label>{{item.strName}}</ion-label>
               </ion-item>
           </ion-list>
-          <ion-fab vertical="bottom" 	horizontal='center' slot="fixed" class="fabfooter">
-                <ion-fab-button class="fabfooterbtn">
-                   <img src="../assets/imgs/middleimg.png" alt="">
-                </ion-fab-button>
-          </ion-fab>
-          <ion-butto></ion-butto>
       </ion-content>
       <ion-footer>
          <ion-toolbar class="footer">
@@ -51,6 +45,11 @@
                 </ion-item>
              </div>
           </ion-toolbar>
+          <ion-fab vertical="bottom" 	horizontal='center' slot="fixed" class="fabfooter">
+            <ion-fab-button class="fabfooterbtn">
+                <img src="../assets/imgs/middleimg.png" alt="">
+            </ion-fab-button>
+         </ion-fab>
       </ion-footer>
       
   </div>
@@ -182,7 +181,7 @@ mounted(){
      --background:#161616;
   }
   .helo-title{
-     --color:#FEFEFE;
+     --color:#CECECE;
   }
   .list-content{
      padding: 0;
@@ -202,10 +201,13 @@ mounted(){
   .footer{
      --background:#000000;
      --border-color:#000000;
+     --padding-top:0;
+     --padding-bottom:0;
+     --min-height:100%;
    }
   .footerbgc{
      width: 100%;
-     height: 56px;
+     height: 100%;
      background: url('../assets/imgs/footerbgc@2x.png') no-repeat;
      background-size:100% 100%;
   }
@@ -228,8 +230,8 @@ mounted(){
     margin-left: 10%;
  }
   .fabfooter{
-    bottom: -32px;
-    /* display: none; */
+    bottom:16px;
+   /* display: none; */
   }
   .fabfooterbtn{
     --background:transparent;
@@ -240,7 +242,7 @@ mounted(){
     display: block;
     width:100%;
     height: 100%;
-    margin-right:8px;
+    /* margin-right:8px; */
  }
  .conectbtn{
     display: none;
