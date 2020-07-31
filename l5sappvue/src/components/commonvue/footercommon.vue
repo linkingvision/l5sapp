@@ -1,10 +1,10 @@
 <template>
    <div class="footerbgc">
         <ion-buttons class="footerbuttons">
-            <ion-button class="btnone" @click="Conference()">
+            <ion-button class="btnone" @click="conference()">
                 <img src="../../assets/imgs/footerfirst.png" alt="">
             </ion-button>
-            <ion-button class="btnone">
+            <ion-button class="btnone" @click="onetoonevideo()">
                 <img src="../../assets/imgs/dianduidian--2@2x.png" alt="">
             </ion-button>
             <ion-button class="btnone">
@@ -25,11 +25,17 @@ export default {
     } 
 },
  methods: {
-     Conference(){
+     conference(){
+         console.log(this.$router.history.name)
+         if(this.$router.history.name!='Conference'){
+             this.$router.push('/Conference')
+         }
+    },
+     onetoonevideo(){
          console.log(1)
-         this.$router.push('/Conference')
+         this.$router.push('/Onetoonevideo')
      }
- }
+   }
 }
 </script>
 
