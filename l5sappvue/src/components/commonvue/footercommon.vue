@@ -26,10 +26,12 @@ export default {
 },
  methods: {
      conference(){
-         console.log(this.$router.history.name)
-         if(this.$router.history.name!='Conference'){
+         console.log(this.$router.history.current.name)
+         if(this.$router.history.current.name!='Conference'){
              this.$router.push('/Conference')
-         }
+         }else{
+                return false
+          }
     },
      onetoonevideo(){
          console.log(1)

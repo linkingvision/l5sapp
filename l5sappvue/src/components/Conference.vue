@@ -28,7 +28,7 @@
                          </ion-item>
                     </ion-col>
                     <ion-col size='6' class="conference-col">
-                          <ion-item class="conference-start" lines='none'>
+                          <ion-item class="conference-start" button lines='none'>
                               <ion-label>加入会议</ion-label>
                               <ion-button>></ion-button>
                          </ion-item>
@@ -93,8 +93,9 @@ export default {
      createdconference(){
          console.log(1)
          this.$router.push('/Createdconference')
-     }
- }
+     },
+     
+  }
 }
 </script>
 
@@ -141,6 +142,8 @@ export default {
      --background:#000000;
      --color:#D3D3D3;
      --min-height:150px;
+     --color-activated:#1562FF !important;
+     --background-activated:#1562FF;
 }
 .conference-itemlabel h3{
      color: #F8F8F8;
@@ -148,7 +151,7 @@ export default {
 }
 .conference-itemlabel p{
      color: #9A9A9A;
-     font-size: 12px;
+     font-size: 16px;
 }
 .recent-bacground{
      width:100%;
@@ -168,6 +171,8 @@ export default {
      --color:#F8F8F8;
      --border-radius:8px;
      font-size: 16px;
+     --color-activated:#1562FF !important;
+     --background-activated:#1562FF;
 }
 .conference-action-item{
      --background:#000000;
@@ -212,7 +217,7 @@ export default {
 }
 .action-label h4{
     color:#999999;
-    font-size: 8px;
+    font-size: 12px;
 }
 .actrion-button{
     right:60px;

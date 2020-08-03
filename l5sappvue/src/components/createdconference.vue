@@ -10,7 +10,7 @@
       <ion-content class="created-content">
           <ion-item lines="none" class="created-item">
               <ion-label class="created-label">会议名称</ion-label>
-              <ion-input class="created-input"></ion-input>
+              <ion-input class="created-input" :value='ocnferencename'  @ionChange="ocnferencename=$event.target.value"></ion-input>
           </ion-item>
           <ion-item lines="none" class="created-item">
               <ion-label class="created-label">开始时间</ion-label>
@@ -20,7 +20,7 @@
                   month-short-names="01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12"
                   done-text='确定'
                   cancel-text='返回'
-                  min="2016" max="2030" value="2020-06-17T11:06Z"></ion-datetime>
+                  min="2016" max="2030" :value='Startdate'></ion-datetime>
           </ion-item>
           <ion-item lines="none" class="created-item">
                <ion-label class="created-label">结束时间</ion-label>
@@ -30,12 +30,12 @@
                   month-short-names="01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12"
                   done-text='确定'
                   cancel-text='返回'
-                  min="2016" max="2030" value="2020-06-17T11:06Z"></ion-datetime>
+                  min="2016" max="2030" :value="Eendate" ></ion-datetime>
           </ion-item>
-          <ion-grid>
+          <ion-grid class="moshigrid">
                <ion-row>
                    <ion-col class="created-col">
-                       <ion-radio-group value="grape" class="radio-group">
+                       <ion-radio-group :value="patterns" class="radio-group"  @ionChange="patterns=$event.target.value">
                             <ion-radio class="cread-checkbox" slot="start"  value="apple"></ion-radio>
                             <ion-label class="moshi-one">1+N模式</ion-label>
                             
@@ -45,67 +45,416 @@
                    </ion-col>
                </ion-row>
           </ion-grid>
-          <ion-item lines="none" class="created-item">
+          <ion-item lines="none" class="created-item" v-if="patterns=='apple'" >
               <ion-label class="created-selectlabel">1+N模式</ion-label>
-              <ion-input class="select-input">
-                    <ion-select interface="popover" class="created-select" slot="end">
-                            <ion-select-option value="nes">NES</ion-select-option>
-                            <ion-select-option value="n64">Nintendo64</ion-select-option>
+              <ion-input class="select-input" >
+                    <ion-select interface="popover" class="created-select" slot="end" value="1p1">
+                        <ion-select-option v-for="(item,index) in onenmode" :key="index" :value='item.value'>{{item.label}}</ion-select-option>
                     </ion-select>
               </ion-input>
            </ion-item>
-           <ion-grid>
+           <ion-item lines="none" class="created-item" v-if="patterns=='grape'">
+              <ion-label class="created-selectlabel">等分模式</ion-label>
+              <ion-input class="select-input">
+                    <ion-select interface="popover" class="created-select" slot="end" value="2x2">
+                          <ion-select-option v-for="(item,index) in epmode" :key="index" :value='item.value'>{{item.label}}</ion-select-option>
+                    </ion-select>
+              </ion-input>
+           </ion-item>
+           <ion-grid class="moshigrid">
                <ion-row>
                     <ion-col class="created-col">
-                       <ion-radio-group value="grape" class="radio-group">
-                            <ion-radio class="cread-checkbox" slot="start"  value="apple"></ion-radio>
+                       <ion-radio-group :value="pattern" class="radio-group" @ionChange="pattern=$event.target.value">
+                            <ion-radio class="cread-checkbox" slot="start"  value="user" ></ion-radio>
                             <ion-label class="moshi-one">会议成员</ion-label>
                             
-                            <ion-radio slot="start" class="cread-checkbox-two" value="grape"></ion-radio>
+                            <ion-radio slot="start" class="cread-checkbox-two" value="device"></ion-radio>
                             <ion-label class="moshi">会议设备</ion-label>
                         </ion-radio-group>
                     </ion-col>
                </ion-row>
           </ion-grid>
-          <ion-item lines="none" id="item-margin" class="created-item">
+          <!-- 成员 -->
+          <ion-item lines="none" id="item-margin" class="created-item" v-if="pattern=='user'">
               <ion-label class="created-label">会议成员</ion-label>
               <ion-input class="select-input">
-                  <ion-select interface="popover" class="created-select" slot="end">
-                      <ion-select-option value="nes">NES</ion-select-option>
-                      <ion-select-option value="n64">Nintendo64</ion-select-option>
+                  <ion-select 
+                       class="created-select" 
+                       cancel-text="取消" 
+                       ok-text="确定" 
+                       slot="end" 
+                       multiple='true'  
+                       placeholder="请选择"  
+                       @ionChange="user=$event.target.value">
+                        <ion-select-option v-for="(item,index) in createduserdata" :key="index" :value='item.value'>{{item.label}}</ion-select-option>
                   </ion-select>
                </ion-input> 
           </ion-item>
+           <!-- 设备 -->
+          <ion-item lines="none" id="item-margin" class="created-item" v-if="pattern=='device'">
+              <ion-label class="created-label">会议设备</ion-label>
+              <ion-input class="select-input">
+                  <ion-select 
+                      cancel-text="取消" 
+                      ok-text="确定" 
+                      class="created-select"  
+                      placeholder="请选择" 
+                      slot="end" 
+                      multiple
+                      @ionChange="token=$event.target.value">
+                     <ion-select-option v-for="(item,index) in tokendata" :key="index" :value='item.value'>{{item.label}}</ion-select-option>
+                  </ion-select>
+               </ion-input> 
+          </ion-item>
+           <!-- 分辨率 -->
           <ion-item lines="none" class="created-item">
               <ion-label id="resolution" class="created-labelresolution">分辨率</ion-label>
               <ion-input class="select-input">
-                    <ion-select interface="popover" class="created-select" slot="end">
-                        <ion-select-option value="nes">NES</ion-select-option>
-                        <ion-select-option value="n64">Nintendo64</ion-select-option>
+                    <ion-select interface="popover" class="created-select" slot="end" value='1080P'>
+                        <ion-select-option v-for="(item,index) in resolution" :key="index" :value='item.value'>{{item.label}}</ion-select-option>
                     </ion-select>
                </ion-input>
           </ion-item>
+          <ion-item lines="none" class="created-switchitem">
+                <ion-label class="created-label">是否开启会议</ion-label>
+                <ion-toggle 
+                        class='created-togggle'  
+                        @ionChange="toppings=$event.target.checked"
+                        value="pepperoni"
+                        :checked="toppings">
+                </ion-toggle>
+          </ion-item>
           <ion-item lines="none" class="created-item">
-              <ion-label class="created-label">是否开启会议</ion-label>
-              <ion-toggle></ion-toggle>
+              <ion-button slot="end"  shape="round" class="createdsubmit" @click="createdsubmit()">+</ion-button>
           </ion-item>
       </ion-content>
    </div>
-</template>
+</template> 
 
 <script>
+import uuid from '../assets/js/uuid1'    
 export default {
   name:'createdconference',
   data(){
       return{
-
+         ocnferencename: 'Conference1',//名称
+         Startdate: new Date(),//时间
+         Eendate: new Date(),//时间
+         pattern:'user',
+         patterns:'apple',
+         user:'',//成员
+         token:'',//设备
+         mettmodesize:1,//位置
+         userdata:[],
+         tokendata:[],
+         createduserdata:[],
+         toppings:false,
+         metttype: 'regular',//会议类型
+         meetdata:[],
+         onenmode:[
+                {
+                    value: "1p1",
+                    label: "1p1"
+                },{
+                    value: "1p2",
+                    label: "1p2"
+                },{
+                    value: "1p2A",
+                    label: "1p2A"
+                },{
+                    value: "1p3A",
+                    label: "1p3A"
+                },{
+                    value: "1p4A",
+                    label: "1p4A"
+                },{
+                    value: "1p5",
+                    label: "1p5"
+                },{
+                    value: "1p6A",
+                    label: "1p6A"
+                },{
+                    value: "1p7",
+                    label: "1p7"
+                },{
+                    value: "3p4",
+                    label: "3p4"
+                },{
+                    value: "PIP1",
+                    label: "PIP1"
+                },{
+                    value: "PIP3",
+                    label: "PIP3"
+                },{
+                    value: "1p2x2A",
+                    label: "1p2x2A"
+                },{
+                    value: "1p12",
+                    label: "1p12"
+                },{
+                    value: "1p16A",
+                    label: "1p16A"
+                },{
+                    value: "4x5A",
+                    label: "4x5A"
+                },{
+                    value: "1p1A",
+                    label: "1p1A"
+                },{
+                    value: "1p2x6A",
+                    label: "1p2x6A"
+                },{
+                    value: "1p1p2x4A ",
+                    label: "1p1p2x4A "
+                }
+                ],//1+n模式
+                epmode:[
+                    {
+                        value: "1x1",
+                        label: "1x1"
+                    },{
+                        value: "2x2",
+                        label: "2x2"
+                    },{
+                        value: "3x3",
+                        label: "3x3"
+                    },{
+                        value: "4x4",
+                        label: "4x4"
+                    },{
+                        value: "5x5",
+                        label: "5x5"
+                    }
+                ],//等分模式
+                 resolutiondafull:'1080P',
+                 resolution:[{
+                        value: "1080P",
+                        label: "1080P"
+                    },{
+                        value: "720P",
+                        label: "720P"
+                    },{
+                        value: "D1",
+                        label: "D1"
+                    },
+                    {
+                        value: "VGA",
+                        label: "VGA"
+                    }
+                ]//分辨率
+            
       }
-  },
+   },
   mounted(){
-
+   this.cretedstart()
   },
   methods:{
+    // 初始创建会议的页面
+    cretedstart(){
+        console.log(888)
+       var createdurl = this.$store.state.callport + "/api/v1/GetSrc?getonline=true&session="+ this.$store.state.token;
+            this.$http.get(createdurl).then(result=>{
+              if(result.status==200){
+                    var data=result.data.src;
+                    // console.log("***",result);
+                    for(var i=0;i<data.length;i++){
+                        var Role={
+                            value: data[i].strToken,
+                            label: data[i].strName
+                        }
+
+                        this.tokendata.push(Role);
+                    }
+                }
+            })
+            this.conferenceuser()
+        },
+    // 会议成员
+   conferenceuser(){
+       var conferenceuserurl = this.$store.state.callport+ "/api/v1/GetUserList?session="+ this.$store.state.token;
+            this.$http.get(conferenceuserurl).then(result=>{
+                console.log("***",result);
+                if(result.status==200){
+                    var data=result.data.users;
+                    for(var i=0;i<data.length;i++){
+                        var Role={
+                            value: data[i].strUser,
+                            label: data[i].strUser
+                        }
+                    this.createduserdata.push(Role);
+                   }
+                }
+           })
+           console.log(this.createduserdata)
+      },
+
+    //  创建提交
+    createdsubmit(){
+      if(this.Startdate==''||this.Eendate==''){
+        // this.$message('时间不能为空');
+        const toast = document.createElement('ion-toast');
+        toast.message = '时间不能为空';
+        toast.position = 'top';
+        toast.duration = 2000;
+        document.body.appendChild(toast);
+        return toast.present();
+        return false
+        }
+        var starfs=new Date(this.Startdate).getTime();
+        var endds=new Date(this.Eendate).getTime();
+        var ks=new Date(starfs).toISOString()+"08:00";
+        var jss=new Date(endds).toISOString()+"08:00";  
+        // console.log(starfs,endds)
+        if(starfs>endds){
+            const toast = document.createElement('ion-toast');
+            toast.message = '结束时间不能提前于开始时间';
+            toast.position = 'top';
+            toast.duration = 2000;
+            document.body.appendChild(toast);
+            return toast.present();
+            this.Eendate=''
+            return false
+        }
+        
+        var token = uuid(4, 10);
+        
+        // return false
+        var playmode=''
+        if(this.patterns=='apple'){
+            playmode='1p2'
+        }else if(this.patterns=='grape'){
+            playmode='2X2'
+        }
+        // return false
+        var url = this.$store.state.callport + "/api/v1/CreateConference?name="+this.ocnferencename
+        +"&token="+encodeURIComponent(token)
+        +"&begintime="+encodeURIComponent(this.Startdate)
+        +"&endtime="+encodeURIComponent(this.Eendate)
+        +"&type="+encodeURIComponent(this.metttype)
+        +"&layoutmode="+encodeURIComponent(this.patterns)
+        +"&layout="+encodeURIComponent(playmode)
+        +"&layoutsize="+encodeURIComponent(this.resolutiondafull)+"&session="+ this.$store.state.token;
+        this.$http.get(url).then(result=>{
+            if(result.status==200){
+                if(this.token.length!=0||this.user.length!=0){
+                    if(this.user.length>0){
+                        this.Addparticipants(token,this.user,"user",this.mettmodesize)
+                    }
+                    if(form.token.length>0){
+                        this.Addparticipants(token,this.token,"device",this.mettmodesize)
+                    }
+                }else if(this.token.length==0&&this.user.length==0){
+                      this.meetingdata()
+                      const toast = document.createElement('ion-toast');
+                       toast.message = '创建成功';
+                      toast.position = 'top';
+                      toast.duration = 2000;
+                      document.body.appendChild(toast);
+                      return toast.present();
+                    }
+                if(this.toppings='true'){
+                    console.log("aaaaa")
+                    this.mettchang(token)
+                }
+            }
+        })
+     },
     
+    //添加参会者
+    Addparticipants(token,usertoken,pattern,mettmodesize){
+            // return false
+            for(var i=0 ; i<usertoken.length ; i++){
+                var url = this.$store.state.callport+ "/api/v1/CreateParticipant?token="+encodeURIComponent(token)+
+                "&participanttoken="+encodeURIComponent(usertoken[i])+
+                "&type="+pattern+
+                "&session="+ this.$store.state.token;
+                this.$http.get(url).then(result=>{
+                    this.meetingdata()
+                    // this.$message(successfully);
+            })
+        }
+     },
+
+     //开启会议
+    mettchang(token){
+            var url = this.$store.state.callport + "/api/v1/StartConference?token="+encodeURIComponent(token)+"&session="+ this.$store.state.token;
+            this.$http.get(url).then(result=>{
+                if(result.status==200){
+                    const toast = document.createElement('ion-toast');
+                    toast.message = '会议开始';
+                    toast.position = 'top';
+                    toast.duration = 2000;
+                    document.body.appendChild(toast);
+                    return toast.present();
+                }
+            })
+        },
+
+    // 获取会议
+   meetingdata(){
+            var url = this.$store.state.callport + "/api/v1/GetConference?session="+ this.$store.state.token;
+            this.$http.get(url).then(result=>{
+                if(result.status==200){
+                    // this.meetdata=result.data.conference
+                    console.log(result)
+                   var data=result.data.conference
+                    if(data.length==0){
+                        return false
+                    }
+                    for(var i=0;i<data.length;i++){
+                        // console.log("1*",data[i].strType)
+                        if(data[i].strType=="temporary"){
+                            continue 
+                        }
+                        var beginTime=new Date(data[i].beginTime).getTime();
+                        var begin=new Date(data[i].beginTime);  
+                        var eng=new Date(data[i].endTime)
+
+                        //年月日
+                        var y = begin.getFullYear();
+                        var m = this.addZero(begin.getMonth()+1);
+                        var d = this.addZero(begin.getDate());
+                        //时分秒
+                        var h = this.addZero(begin.getHours());
+                        var mm = this.addZero(begin.getMinutes());
+                        var rq=y+'.'+m+'.'+d+" "+h+':'+mm;
+                        var listdata={
+                            bStartStatus: data[i].bStartStatus,
+                            beginTime: rq,
+                            beginTime1: beginTime,
+                            endTime: data[i].endTime,
+                            mosaicSize: data[i].mosaicSize,
+                            mosaicType: data[i].mosaicType,
+                            nId: data[i].nId,
+                            strName: data[i].strName,
+                            strToken: data[i].strToken,
+                            strType: data[i].strType,
+                        }
+                        this.meetdata.push(listdata)
+                        
+                        console.log("1*",this.meetdata)
+                    }
+                    if(this.meetdata.length!=0){
+                        this.meetdata.sort(function(a,b){
+                            return  b.beginTime1-a.beginTime1
+                        })
+                        var daterecent=Math.round(new Date().getTime())
+                        var newArr = [];
+                        this.meetdata.map(function(x){
+                            // 对数组各个数值求差值
+                            newArr.push(Math.abs(x.beginTime1 - daterecent));
+                            // console.log(newArr,x.beginTime1 - daterecent,x.beginTime1,daterecent)
+                        });
+                        // 求最小值的索引
+                        var index = newArr.indexOf(Math.min.apply(null, newArr))
+                        this.daterecent=this.meetdata[index]
+                        
+                        // console.log(this.daterecent,"1")
+                    }
+                }
+                
+            })
+        },
   }
 }
 </script>
@@ -129,8 +478,14 @@ export default {
 .created-item{
     --background:#000000;
     --color:#FFFFFF;
-    /* margin-bottom: 10px; */
+    margin-bottom: 10px;
 }
+.created-switchitem{
+   --background:#000000;
+    --color:#FFFFFF;
+    width: 400px;
+    margin-bottom: 30px;
+} 
 .created-item#item-margin{
     margin-bottom: 10px;
 }
@@ -145,36 +500,39 @@ export default {
     font-size: 8px;
 }
 .created-label{
-    font-size:18px;
+    font-size:20px;
     font-weight: 600;
 }
 .created-labelresolution{
-    font-size:18px;
+    font-size:20px;
     font-weight: 600;
     /* margin-left: 35px;; */
 }
 .created-selectlabel{
-    font-size:18px;
+    font-size:20px;
     font-weight: 600;
     /* width: 100px;; */
 }
 .created-datetime{
     color:#9A9A9A ;
-    font-size: 8px;
+    font-size: 16px;
 }
 .moshi-one{
     color:#FFFFFF;
-    font-size:18px;
+    font-size:20px;
     font-weight: 600;
     margin-right: 50px;
 }
 .moshi{
     color:#FFFFFF;
-    font-size:18px;
+    font-size:20px;
     font-weight: 600;
 }
 .moshi:nth-child(1){
     margin-right:50px;
+}
+.moshigrid{
+    margin: 10px 0;
 }
 .cread-checkbox{
     vertical-align: middle;
@@ -203,7 +561,25 @@ export default {
     height: 80px;
     width: 100%;
     --color:#9A9A9A;
-    font-size: 8px;
+    font-size: 16px;
     justify-content: right;
 }
+ion-select {
+  width: 100%;
+
+  justify-content: center;
+}
+
+ion-toggle {
+  --background: #FFFFFF;
+  --background-checked: #32C88C;
+
+  --handle-background: #FFFFFF;
+  --handle-background-checked: #FFFFFF;
+}
+.createdsubmit{
+    width:80px;
+    height: 80px;
+}
+
 </style>
