@@ -117,11 +117,7 @@
           </ion-item>
           <ion-item lines="none" class="created-switchitem">
                 <ion-label class="created-label">是否开启会议</ion-label>
-                <ion-toggle 
-                        class='created-togggle'  
-                        @ionChange="toppings=$event.target.checked"
-                        value="pepperoni"
-                        :checked="toppings">
+                <ion-toggle class='created-togggle' :checked="toppings"  @ionChange="toppings=$event.target.checked">
                 </ion-toggle>
           </ion-item>
           <ion-item lines="none" class="created-item">
@@ -251,7 +247,6 @@ export default {
   methods:{
     // 初始创建会议的页面
     cretedstart(){
-        console.log(888)
        var createdurl = this.$store.state.callport + "/api/v1/GetSrc?getonline=true&session="+ this.$store.state.token;
             this.$http.get(createdurl).then(result=>{
               if(result.status==200){
@@ -290,7 +285,9 @@ export default {
 
     //  创建提交
     createdsubmit(){
-      if(this.Startdate==''||this.Eendate==''){
+       
+        console.log(this.toppings)
+       if(this.Startdate==''||this.Eendate==''){
         // this.$message('时间不能为空');
         const toast = document.createElement('ion-toast');
         toast.message = '时间不能为空';
@@ -336,28 +333,31 @@ export default {
         +"&layoutsize="+encodeURIComponent(this.resolutiondafull)+"&session="+ this.$store.state.token;
         this.$http.get(url).then(result=>{
             if(result.status==200){
-                if(this.token.length!=0||this.user.length!=0){
-                    if(this.user.length>0){
+               if(this.token.length!=0||this.user.length!=0){
+                        if(this.user.length>0){
                         this.Addparticipants(token,this.user,"user",this.mettmodesize)
-                    }
-                    if(form.token.length>0){
+                        }
+                        if(this.token.length>0){
                         this.Addparticipants(token,this.token,"device",this.mettmodesize)
-                    }
+                        }
                 }else if(this.token.length==0&&this.user.length==0){
-                      this.meetingdata()
-                      const toast = document.createElement('ion-toast');
-                       toast.message = '创建成功';
-                      toast.position = 'top';
-                      toast.duration = 2000;
-                      document.body.appendChild(toast);
-                      return toast.present();
-                    }
-                if(this.toppings='true'){
-                    console.log("aaaaa")
+                        const toast = document.createElement('ion-toast');
+                        toast.color="primary";
+                        toast.message = '创建成功';
+                        toast.position = 'top';
+                        toast.duration = 2000;
+                        document.body.appendChild(toast);
+                        toast.present();
+                 }
+                 console.log(this.toppings)
+                if(this.toppings){
                     this.mettchang(token)
                 }
             }
-        })
+            this.$nextTick(() => {
+               this.$router.push('/Conference');
+            })
+         })
      },
     
     //添加参会者
@@ -369,11 +369,11 @@ export default {
                 "&type="+pattern+
                 "&session="+ this.$store.state.token;
                 this.$http.get(url).then(result=>{
-                    this.meetingdata()
-                    // this.$message(successfully);
-            })
-        }
-     },
+                      console.log('添加成功')
+                   // this.$message(successfully);
+              })
+          }
+      },
 
      //开启会议
     mettchang(token){
@@ -381,81 +381,16 @@ export default {
             this.$http.get(url).then(result=>{
                 if(result.status==200){
                     const toast = document.createElement('ion-toast');
+                    toast.color="success";
                     toast.message = '会议开始';
                     toast.position = 'top';
                     toast.duration = 2000;
                     document.body.appendChild(toast);
-                    return toast.present();
+                    toast.present();
                 }
-            })
-        },
-
-    // 获取会议
-   meetingdata(){
-            var url = this.$store.state.callport + "/api/v1/GetConference?session="+ this.$store.state.token;
-            this.$http.get(url).then(result=>{
-                if(result.status==200){
-                    // this.meetdata=result.data.conference
-                    console.log(result)
-                   var data=result.data.conference
-                    if(data.length==0){
-                        return false
-                    }
-                    for(var i=0;i<data.length;i++){
-                        // console.log("1*",data[i].strType)
-                        if(data[i].strType=="temporary"){
-                            continue 
-                        }
-                        var beginTime=new Date(data[i].beginTime).getTime();
-                        var begin=new Date(data[i].beginTime);  
-                        var eng=new Date(data[i].endTime)
-
-                        //年月日
-                        var y = begin.getFullYear();
-                        var m = this.addZero(begin.getMonth()+1);
-                        var d = this.addZero(begin.getDate());
-                        //时分秒
-                        var h = this.addZero(begin.getHours());
-                        var mm = this.addZero(begin.getMinutes());
-                        var rq=y+'.'+m+'.'+d+" "+h+':'+mm;
-                        var listdata={
-                            bStartStatus: data[i].bStartStatus,
-                            beginTime: rq,
-                            beginTime1: beginTime,
-                            endTime: data[i].endTime,
-                            mosaicSize: data[i].mosaicSize,
-                            mosaicType: data[i].mosaicType,
-                            nId: data[i].nId,
-                            strName: data[i].strName,
-                            strToken: data[i].strToken,
-                            strType: data[i].strType,
-                        }
-                        this.meetdata.push(listdata)
-                        
-                        console.log("1*",this.meetdata)
-                    }
-                    if(this.meetdata.length!=0){
-                        this.meetdata.sort(function(a,b){
-                            return  b.beginTime1-a.beginTime1
-                        })
-                        var daterecent=Math.round(new Date().getTime())
-                        var newArr = [];
-                        this.meetdata.map(function(x){
-                            // 对数组各个数值求差值
-                            newArr.push(Math.abs(x.beginTime1 - daterecent));
-                            // console.log(newArr,x.beginTime1 - daterecent,x.beginTime1,daterecent)
-                        });
-                        // 求最小值的索引
-                        var index = newArr.indexOf(Math.min.apply(null, newArr))
-                        this.daterecent=this.meetdata[index]
-                        
-                        // console.log(this.daterecent,"1")
-                    }
-                }
-                
-            })
-        },
-  }
+          })
+       },
+    }
 }
 </script>
 
@@ -581,5 +516,7 @@ ion-toggle {
     width:80px;
     height: 80px;
 }
-
+.ion-toast{
+    --background:#0B62FF;
+}
 </style>

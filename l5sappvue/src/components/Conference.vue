@@ -11,8 +11,8 @@
                     <ion-item class="conference-item"  button detail='true' lines="none">
                         <div class="recent-bacground">
                             <ion-label class="conference-itemlabel">
-                                <h3>‘视频会议’于2020.0718 20：00：00即将开始</h3>
-                                <p>会议号：08808</p>
+                                <h3>‘视频会议’于{{daterecent.beginTime}}即将开始</h3>
+                                <p>会议号：{{daterecent.strToken}}</p>
                             </ion-label>
                         </div>
                     </ion-item>
@@ -28,7 +28,7 @@
                          </ion-item>
                     </ion-col>
                     <ion-col size='6' class="conference-col">
-                          <ion-item class="conference-start" button lines='none'>
+                          <ion-item class="conference-start" button lines='none' @click="openModal()">
                               <ion-label>加入会议</ion-label>
                               <ion-button>></ion-button>
                          </ion-item>
@@ -48,18 +48,19 @@
        <ion-content class="conference-content">
              <!-- 待办会议-->
             <ion-list class="conference-list" lines='none'>
-                 <ion-item class="conference-action-item" button lines="none" detail='false'>
+                 <ion-item class="conference-action-item" button lines="none" detail='false' v-for="(item,index) in meetdata" :key="index" @click="mettevent()">
                         <div class="civ">
                             <ion-label class="action-label">
                                 <h3 >
                                     L5S会议视频平台
                                     <ion-fab vertical="top" horizontal="end" class="label-ing">
-                                    <ion-label color='primary'>.进行中</ion-label>
+                                        <ion-label color='success' v-if="item.bStartStatus">.进行中</ion-label>
+                                        <ion-label color='primary' v-if="!item.bStartStatus">筹备中</ion-label>
                                     </ion-fab>
                                 </h3>
                                 <p>视频技术交流会议</p>
-                                <h4>日期：2020.0908 20：30：00</h4>
-                                <h4>会议号：0805855</h4>
+                                <h4>日期：{{item.beginTime}}</h4>
+                                <h4>会议号：{{item.strToken}}</h4>
                                 <ion-fab vertical="bottom" horizontal="end" class="actrion-button">
                                     <ion-fab-button class="actrion-fabbtn">></ion-fab-button>
                                 </ion-fab>
@@ -79,23 +80,154 @@
                 </ion-fab-button>
             </ion-fab>
         </ion-footer>
+        <!-- 弹窗 -->
+        <div class="joinconference">
+            <p class="title" lines="none">
+                请输入会议号
+            </p>
+            <ion-input v-model="conference" class="maltaiinput" :value='joinusertoken' @ionChange="joinusertoken=$event.target.value"></ion-input>
+            <div class="maltaibtn">
+                <ion-button class="cancelbtn" shape="round" @click="cancelbtn()">取消</ion-button>
+                <ion-button class="okeybtn" shape="round" @click="okeybtn()">确定</ion-button>
+            </div>
+        </div>
    </div>
 </template>
-
 <script>
+// import { Component, Vue } from 'vue-property-decorator';
+
 export default {
  data(){
      return{
-
+         meetdata:[],
+         daterecent:[],
+         conference:'',
+         joinusertoken:''
      }
  },
+ mounted(){
+    this. meetingdata()
+    $('.joinconference').hide()
+ },
  methods:{
-     createdconference(){
+    createdconference(){
          console.log(1)
          this.$router.push('/Createdconference')
      },
-     
-  }
+    //会议开始播放
+    mettevent(jointoken){
+       var url = this.$store.state.callport + "/api/v1/GetConference?session="+ this.$store.state.token;
+            this.$http.get(url).then(result=>{
+                if(result.status==200){
+                    console.log(result)
+                    var data=result.data.conference
+                    for(var i=0;i<data.length;i++){
+                        if(jointoken==data[i].strToken){
+                            if(data[i].bStartStatus){
+                                console.log(data[i].bStartStatus)
+                                $('.joinconference').hide()
+                                console.log('#ddd')
+                                return false
+                                // this.$router.push({
+                                //     name: `Participants`,
+                                //     path: 'Participants',
+                                //     params: {
+                                //         token:usertoken
+                                //     }
+                                // })
+                            }else{
+                                this.$message('会议未开始');
+                            }
+                        }
+                    }
+                } 
+         })
+      },
+    //加入会议模态
+    openModal(){ 
+        $('.conference').toggleClass("backdrop")
+        if($('.joinconference').is(':hidden')){
+           $('.joinconference').show()
+        }else{
+           $('.joinconference').hide()
+        }
+        
+    }, 
+    cancelbtn(){
+        $('.joinconference').hide()
+    },
+    okeybtn(){
+        console.log(this.joinusertoken)
+        this.mettevent(this.joinusertoken)
+    },
+    // 获取会议
+    meetingdata(){
+            var url = this.$store.state.callport + "/api/v1/GetConference?session="+ this.$store.state.token;
+            this.$http.get(url).then(result=>{
+                if(result.status==200){
+                    // this.meetdata=result.data.conference
+                    console.log(result)
+                   var data=result.data.conference
+                    if(data.length==0){
+                        return false
+                    }
+                    for(var i=0;i<data.length;i++){
+                        // console.log("1*",data[i].strType)
+                        if(data[i].strType=="temporary"){
+                            continue 
+                        }
+                        var beginTime=new Date(data[i].beginTime).getTime();
+                        var begin=new Date(data[i].beginTime);  
+                        var eng=new Date(data[i].endTime)
+                        console.log(eng)
+
+                        //年月日
+                        var y = begin.getFullYear();
+                        var m = this.addZero(begin.getMonth()+1);
+                        var d = this.addZero(begin.getDate());
+                        //时分秒
+                        var h = this.addZero(begin.getHours());
+                        var mm = this.addZero(begin.getMinutes());
+                        var rq=y+'.'+m+'.'+d+" "+h+':'+mm;
+                        var listdata={
+                            bStartStatus: data[i].bStartStatus,
+                            beginTime: rq,
+                            beginTime1: beginTime,
+                            endTime: data[i].endTime,
+                            mosaicSize: data[i].mosaicSize,
+                            mosaicType: data[i].mosaicType,
+                            nId: data[i].nId,
+                            strName: data[i].strName,
+                            strToken: data[i].strToken,
+                            strType: data[i].strType,
+                        }
+                        this.meetdata.push(listdata)
+                       console.log("1*",this.meetdata)
+                    }
+                    if(this.meetdata.length!=0){
+                        this.meetdata.sort(function(a,b){
+                            return  b.beginTime1-a.beginTime1
+                        })
+                        var daterecent=Math.round(new Date().getTime())
+                        var newArr = [];
+                        this.meetdata.map(function(x){
+                            // 对数组各个数值求差值
+                            newArr.push(Math.abs(x.beginTime1 - daterecent));
+                            // console.log(newArr,x.beginTime1 - daterecent,x.beginTime1,daterecent)
+                        });
+                        // 求最小值的索引
+                        var index = newArr.indexOf(Math.min.apply(null, newArr))
+                        this.daterecent=this.meetdata[index]
+                        console.log(this.meetdata[index])
+                        console.log(this.daterecent,"1")
+                    }
+                }
+            })
+        },
+          addZero(n){
+            return n<10?"0"+n:n;
+        },
+   }
 }
 </script>
 
@@ -106,6 +238,14 @@ export default {
     margin: 0;
     padding: 0;
  }
+ .backdrop{
+    width:100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    --background: #000000;
+    /* opacity: 0.3; */
+ }
  /* 头部 */
  .conference-toobar{
     --background:#000000;
@@ -114,7 +254,52 @@ export default {
     --color:#FEFEFE;
     text-align: left;
  }
-
+ /* 加入弹窗 */
+.joinconference{
+    width:70%;
+    /* height:200px; */
+    background-color: #121212;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    padding: 15px;
+    border-radius:20px;
+    padding:15px 30px;
+    z-index: 2000000000000;
+}
+.title{
+    text-align: left;
+    color: #FFFFFF;
+    font-size: 20px; 
+    font-weight: 600;
+}
+.maltaiinput{
+    /* width: 80%; */
+    text-align: left;
+    border-radius:30px;
+    --background:#303030;
+    margin: 30px 0;
+    color:#9A9A9A;
+}
+.maltaibtn{
+    width:100%;
+}
+.cancelbtn{
+    --background:transparent;
+    --color:#FFFFFF;
+    border: 1px solid;
+    border-color:#1562FF !important;
+    border-radius:50px;
+    --box-shadow:0;
+    margin-right: 30px;
+}
+.okeybtn{
+    margin-left: 30px;
+}
+ion-backdrop {
+    opacity: 0.3;
+}
  /* 主体部分 */
 .conference-content{
     width: 100%;
@@ -262,4 +447,5 @@ export default {
      height: 100%;
      /* margin-right:8px; */
  }
+/* 加入会议模态框 */
 </style>

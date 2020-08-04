@@ -104,6 +104,7 @@ export default {
      presentLoading() {
         return this.$ionic.loadingController
         .create({
+          cssClass: 'my-custom-class',
           message: '正在登录',
           duration: this.timeout,
         })
