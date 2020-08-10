@@ -6,8 +6,8 @@
                   <ion-row class="herderrow">
                        <ion-col>
                            <ion-label class="videolabel">
-                               <h3>点对点视频会议</h3>
-                                <p>会议号：{{this.$store.state.usertoken}}</p>
+                               <h3>视频对讲研讨会</h3>
+                                <p>会议号：{{usertoken}}</p>
                            </ion-label>
                         </ion-col>
                        <ion-col>
@@ -53,26 +53,50 @@
                       </ion-label>
                 </ion-item>
              </ion-fab>
-             <!-- 底部按钮 -->
+              <!--语音 -->
               <ion-fab vertical="bottom" horizontal="center" slot="fixed" class="menufunction">
                     <ion-button class="audiobtn">语音</ion-button>
-                    <ion-button class="audiobtn"  @click="connection()">视频</ion-button>
-                    <ion-button class="audiobtn">共享</ion-button>
+                    <ion-button class="audiobtn" @click="connection()">视频</ion-button>
+                    <ion-button class="audiobtn">共屏</ion-button>
               </ion-fab>
         </ion-content>
         <ion-footer></ion-footer>
         <eventLists></eventLists>
+        <ion-backdrop stop-propagation="true" class="backdrop" ></ion-backdrop>
+        <ion-fab vertical="start" horizontal="start" slot="fixed" class="camerinfo">
+            <ion-content class="joincontent">
+                <div class="divmiddle">
+                    <ion-item lines="none" class="confercenum">
+                        <ion-label>摄像头</ion-label>
+                        <ion-input class="joininput">
+                            <ion-select 
+                            interface="popover" 
+                            class="join-select" 
+                            slot="end" 
+                            :value='cameradata' 
+                            @ionChange="cameradata=$event.target.value">
+                                <ion-select-option class="remor" v-for="(item,index) in camera" :key="index" :value='item.value'>{{item.label}}</ion-select-option>
+                            </ion-select>
+                        </ion-input>
+                    </ion-item>
+                    <ion-item lines="none" class="confercenum">
+                        <ion-button slot="start" 	color='secondary'  shape="round" fill="outline" class="cancelbtn" @click="cancelluploadinfo()">取消</ion-button>
+                        <ion-button slot="end"  shape="round" class="dongbtn" @click="connectionbtn()">确定</ion-button>
+                    </ion-item>
+                </div>
+            </ion-content>
+        </ion-fab>
      </div>
 </template>
 
 <script>
-import '../assets/js/adapter.js'
-import '../assets/js/platform.js'
-import '../assets/js/h5splayerhelper.js'
-import '../assets/css/h5splayer.css'
-import uuid from '../assets/js/uuid1'
-import {H5siOS,H5sPlayerCreate} from '../assets/js/h5splayerhelper.js'
-import {H5sPlayerWS,H5sPlayerHls,H5sPlayerRTC,H5sRTCGetCapability,H5sPlayerAudBack,H5sConference,H5sRTCPush} from '../assets/js/h5splayer.js'
+import '../../assets/js/adapter.js'
+import '../../assets/js/platform.js'
+import '../../assets/js/h5splayerhelper.js'
+import '../../assets/css/h5splayer.css'
+import uuid from '../../assets/js/uuid1'
+import {H5siOS,H5sPlayerCreate} from '../../assets/js/h5splayerhelper.js'
+import {H5sPlayerWS,H5sPlayerHls,H5sPlayerRTC,H5sRTCGetCapability,H5sPlayerAudBack,H5sConference,H5sRTCPush} from '../../assets/js/h5splayer.js'
 import * as types from '@/vuex/types'
 export default {
   name: 'Videoconference',
@@ -81,6 +105,7 @@ export default {
        v1:undefined,
        h5handler:undefined,
        usertoken:this.$route.params.token,
+       userdata:[],
        VideoCodecs: [],
        VideoCodec:"",
        VideoIns: [],
@@ -93,8 +118,18 @@ export default {
        Resolution:"",
        Bitrates: [],
        Bitratess:"",
-       el:undefined
-     } 
+       el:undefined,
+       camera:[
+              {
+                value: "environment",
+                label: "environment"
+               },{
+                value: "user",
+                label: "user"
+               }
+            ],
+        cameradata:'user'
+       } 
   } ,
  beforeDestroy() {
         if (this.h5handler != undefined)
@@ -108,55 +143,59 @@ export default {
             this.v1.disconnect();
             delete this.v1;
             this.v1 = undefined;
-           // $("#h5sVideoLocal").get(0).load();
         }
       },
+          //初始化 
   created(){
          H5sRTCGetCapability(this.UpdateCapability)
    },
+         
   mounted(){
-        //  this.updisplay()
-         let _this=this
-        //  在其他的页面的值
-          if(_this.usertoken!=undefined){
-            console.log("播放",this.usertoken)
-            _this.l5svideplay()
-           
-          }
-          if(this.$route.params.videoVlue!==undefined){
-              let playVlue=this.$route.params.videoVlue
-               _this.videocall(playVlue)
-          }
-        //  在本页面传过来拨打的值
-         _this.$root.bus.$on('meettoken', function(token){
-            console.log("播放",token)
-            _this.usertoken=token
-            _this.l5svideplay()
-         });
+       if(this.usertoken!= undefined){
+               setTimeout(()=>{
+                   this.connection()
+                },2000);
+                this.l5svideplay() 
+        }else{
+            this.$router.push('/Conference')
+        }
+
      },
   methods:{
-      //视频对讲
-       videocall(playVlue){
-          var token = uuid(4, 10);
-          this.usertoken=token
-          this.$store.commit(types.USERTOKEN, token)
-          var starfs=new Date().getTime();
-          var endds=new Date().getTime();
-          var ks=new Date(starfs).toISOString()+"08:00";
-          var jss=new Date(endds).toISOString()+"08:00";
-
-          var url = this.$store.state.callport + "/api/v1/OnetoOneConference?name="
-          +this.$store.state.Useport.user+"&token="
-          +token+"&begintime="
-          +ks+"&endtime="
-          +jss+"&user="
-          +playVlue+"&session="+ this.$store.state.token;
-          this.$http.get(url).then(res=>{
-               console.log(res)
-               this.l5svideplay();
-          })
-       } ,
-           //播放视频
+        //视频对讲
+        //获取会议成员列表
+        mettuselest(){
+            var url = this.$store.state.callport + "/api/v1/GetParticiant?token="+this.usertoken+"&session="+ this.$store.state.token;
+            this.$http.get(url).then(result=>{
+                console.log(result)
+                var data=result.data.particiants
+                if(data.length==0){
+                    return false
+                }
+                console.log(data)
+                for(var i=0; i<data.length;i++){
+                    if(data[i].strToken==this.usertoken){
+                        continue
+                    }
+                  var userdata={
+                        mosaicId: data[i].mosaicId,
+                        nSolt: data[i].nSolt,
+                        partId: data[i].partId,
+                        strName: data[i].strName,
+                        strToken: data[i].strToken,
+                        strType: data[i].strType,
+                        bOnline: data[i].bOnline
+                    }
+                    // if(userdata["strType"]=="device"){
+                    //     userdata["icon"]="iconfont icon-shexiangji"
+                    // }
+                    this.userdata.push(userdata)
+                    console.log(this.userdata)
+                }
+            })
+        },   
+       
+        //播放视频
        l5svideplay(){
           if (this.h5handler != undefined)
           {    
@@ -179,11 +218,11 @@ export default {
             
             this.h5handler = new H5sPlayerWS(conf);
             this.h5handler.connect( );
-            
-            // this.connection()
-         },
+            this.uploadinfo()
+           },
            //开启视频
         connection(){
+            console.log(this.cameradata)
             if (this.v1 != undefined)
                 {
                     this.v1.disconnect();
@@ -199,6 +238,7 @@ export default {
                     rootpath:'/', // {string} - path of the app running
                     user:this.$store.state.Useport.user, // {string} - user name
                     type:'media', // {string} - media or sharing
+                    facingmode:this.cameradata, // {string} - user or environment; desktop remove this config
                     audio: audioout,
                     callback: this.PlaybackCB, //Callback for the event
                     userdata: null, // user data
@@ -220,7 +260,7 @@ export default {
                 this.v1.connect(
                     this.VideoIn,
                     this.VideoCodec,
-                    this.Bitratess,
+                    this.Bitratess, 
                     this.Resolution,
                     this.AudioIn,
                     false
@@ -313,7 +353,27 @@ export default {
                 delete this.v1;
                 this.v1 = undefined;
             }
-        }  
+        //    this.$route.push('/Conference')
+        } ,
+       // 确定
+       connectionbtn(){
+           if(this.cameradata!=undefined){
+               this. cancelluploadinfo()
+               this.connection()
+            }else{
+               return
+           }
+       },
+       // 显示上传信息
+        uploadinfo(){
+            $('.backdrop').css('display','block')
+            $('.camerinfo').css('display','block') 
+        },
+        // 取消会议模态框 、
+        cancelluploadinfo(){
+            $('.backdrop').css('display','none')
+            $('.camerinfo').css('display','none')
+        },
    }
 }
 </script>
@@ -351,8 +411,8 @@ export default {
       --background:#000000;
 }
 .videobutton{
-      width:65px;
-      height: 25px;
+      /* width:65px;*/
+      height: 60px; 
       margin-left: 25px;
 }
 .notifications{
@@ -373,16 +433,16 @@ export default {
       --color:#BBBBBB;
     }
 .vieoone{
-     bottom: 30px;
+     bottom: 50px;
      margin-left: 20px;
 }
 .vieoonetoone{
-    width: 150px;
-    /* height: 35px; */
+    width: 200px;
+    /* height: 80px; */
     --background:#1A1A1A;
     border-radius: 10px;
-    
     --color:#BBBBBB;
+    font-size: 18px;
 }
 .audio {
      bottom: 30px; 
@@ -417,4 +477,57 @@ export default {
     left:50%;
     /* transform: translateX(-50%);  */
 }
+ion-backdrop {
+    opacity: 0.6;
+}
+/* 弹框 */
+.camerinfo{
+      width:50%;
+      height: 20%;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%,-50%);
+      z-index: 9999999999999999999999;
+      display:none;
+}
+.divmiddle{
+   position: absolute;
+   top: 50%;
+   left:50%;
+   transform: translate(-50%,-50%);
+   padding:0 10px;  
+}
+.joincontent{
+    --background:#282828;
+ }
+ .confercenum{
+    --background:transparent;
+    --color:#FFFFFF ;
+    font-size: 18px;
+    /* margin-bottom:5px; */
+ }
+ .joininput{
+    border: 1px solid #303030;
+    --background:#282828;
+    --color:#9A9A9A;
+    margin-left: 15px;
+    border-radius: 10px;
+    height: 50px;
+ }
+ ion-select {
+     width: 100%;
+     color: #9A9A9A;
+ }
+ .join-select{
+     width: 100%;
+     color: #9A9A9A;
+ }
+ .cancelbtn{
+     width: 100px;
+     height: 50px;
+}
+ .dongbtn{
+     width: 100px;
+     height: 50px;
+ }
 </style>>

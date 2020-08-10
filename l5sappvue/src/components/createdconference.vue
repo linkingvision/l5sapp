@@ -124,6 +124,7 @@
               <ion-button slot="end"  shape="round" class="createdsubmit" @click="createdsubmit()">+</ion-button>
           </ion-item>
       </ion-content>
+      <eventLists></eventLists>
    </div>
 </template> 
 

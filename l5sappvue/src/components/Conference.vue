@@ -8,7 +8,7 @@
                     <ion-list-header lines="full" class="list-header">
                         <ion-label>最近会议</ion-label>
                     </ion-list-header>  
-                    <ion-item class="conference-item"  button detail='true' lines="none">
+                    <ion-item class="conference-item"  button detail='true' lines="none" @click="mettevent(daterecent.strToken)">
                         <div class="recent-bacground">
                             <ion-label class="conference-itemlabel">
                                 <h3>‘视频会议’于{{daterecent.beginTime}}即将开始</h3>
@@ -48,7 +48,7 @@
        <ion-content class="conference-content">
              <!-- 待办会议-->
             <ion-list class="conference-list" lines='none'>
-                 <ion-item class="conference-action-item" button lines="none" detail='false' v-for="(item,index) in meetdata" :key="index" @click="mettevent()">
+                 <ion-item class="conference-action-item" button lines="none" detail='false' v-for="(item,index) in meetdata" :key="index" @click="mettevent(item.strToken)">
                         <div class="civ">
                             <ion-label class="action-label">
                                 <h3 >
@@ -66,7 +66,7 @@
                                 </ion-fab>
                             </ion-label>
                         </div>
-                    </ion-item>
+                  </ion-item>
             </ion-list>
         </ion-content>
          <!--底部 -->
@@ -91,12 +91,15 @@
                 <ion-button class="okeybtn" shape="round" @click="okeybtn()">确定</ion-button>
             </div>
         </div>
+        <eventLists></eventLists>
    </div>
 </template>
 <script>
 // import { Component, Vue } from 'vue-property-decorator';
 
 export default {
+ props: { timeout: { type: Number, default: 2000 },},
+ name:'Conference',
  data(){
      return{
          meetdata:[],
@@ -126,23 +129,48 @@ export default {
                             if(data[i].bStartStatus){
                                 console.log(data[i].bStartStatus)
                                 $('.joinconference').hide()
-                                console.log('#ddd')
-                                return false
-                                // this.$router.push({
-                                //     name: `Participants`,
-                                //     path: 'Participants',
-                                //     params: {
-                                //         token:usertoken
-                                //     }
-                                // })
+                                this.presentLoading(jointoken)
+                                this.$nextTick(() => {
+                                    this.$router.push({
+                                        name: `Playconferce`,
+                                        path: 'Playconferce',
+                                        params: {
+                                            token:jointoken
+                                        }
+                                    })
+                                })
+                               
                             }else{
-                                this.$message('会议未开始');
+                                console.log(888)
+                                const toast = document.createElement('ion-toast');
+                                toast.color ='danger'
+                                toast.message = '会议还未开始';
+                                toast.position = 'top';
+                                toast.duration = 2000;
+                                document.body.appendChild(toast);
+                                return toast.present();
+                                console.log(888)
                             }
                         }
                     }
                 } 
          })
       },
+     // 懒加载
+     presentLoading(jointoken) {
+        return this.$ionic.loadingController
+        .create({
+          cssClass: 'my-custom-class',
+          message: '进入会议号为：'+jointoken+'的房间',
+          duration: this.timeout,
+        })
+        .then(loading => {
+          setTimeout(function() {
+            loading.dismiss()
+          }, this.timeout)
+          return loading.present()
+        })
+    },
     //加入会议模态
     openModal(){ 
         $('.conference').toggleClass("backdrop")
@@ -155,10 +183,12 @@ export default {
     }, 
     cancelbtn(){
         $('.joinconference').hide()
+        this.joinusertoken='';
     },
     okeybtn(){
         console.log(this.joinusertoken)
         this.mettevent(this.joinusertoken)
+        this.joinusertoken=''
     },
     // 获取会议
     meetingdata(){
