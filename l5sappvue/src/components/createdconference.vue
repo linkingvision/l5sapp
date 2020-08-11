@@ -342,6 +342,9 @@ export default {
                         this.Addparticipants(token,this.token,"device",this.mettmodesize)
                         }
                 }else if(this.token.length==0&&this.user.length==0){
+                        if(this.toppings){
+                           this.mettchang(token)
+                         }else{
                         const toast = document.createElement('ion-toast');
                         toast.color="primary";
                         toast.message = '创建成功';
@@ -349,11 +352,12 @@ export default {
                         toast.duration = 2000;
                         document.body.appendChild(toast);
                         toast.present();
+                     }
                  }
                  console.log(this.toppings)
-                if(this.toppings){
-                    this.mettchang(token)
-                }
+                // if(this.toppings){
+                //     this.mettchang(token)
+                // }
             }
             this.$nextTick(() => {
                this.$router.push('/Conference');
@@ -370,8 +374,17 @@ export default {
                 "&type="+pattern+
                 "&session="+ this.$store.state.token;
                 this.$http.get(url).then(result=>{
-                      console.log('添加成功')
-                   // this.$message(successfully);
+                    if(this.toppings){
+                        this.mettchang(token)
+                    }else{
+                        const toast = document.createElement('ion-toast');
+                        toast.color="primary";
+                        toast.message = '创建成功';
+                        toast.position = 'top';
+                        toast.duration = 2000;
+                        document.body.appendChild(toast);
+                        toast.present(); 
+                    }
               })
           }
       },
