@@ -17,25 +17,9 @@
               </ion-item>
           </ion-list>
       </ion-content>
+      <!-- <footertabs></footertabs> -->
       <ion-footer>
-         <ion-toolbar class="footer">
-            <!-- <div class="footerbgc">
-                 <ion-buttons class="footerbuttons">
-                    <ion-button class="btnone">
-                        <img src="../assets/imgs/footerfirst.png" alt="">
-                      </ion-button>
-                      <ion-button class="btnone">
-                          <img src="../assets/imgs/dianduidian--2@2x.png" alt="">
-                      </ion-button>
-                      <ion-button class="btnone">
-                          <img src="../assets/imgs/shezhi_guanli-2@2x.png" alt="">
-                      </ion-button>
-                      <ion-button  class="btnone">
-                          <img src="../assets/imgs/yonghu-8@2x.png" alt="">
-                      </ion-button>
-                  </ion-buttons>
-             </div> -->
-             <footertabs></footertabs>
+         <ion-toolbar class="footers">
              <div class="conectbtn">
                 <ion-item class="conectbtnitem"  @click="audioclck()" button detail='false'>
                     <div class="audioconference"></div>
@@ -45,11 +29,6 @@
                 </ion-item>
              </div>
           </ion-toolbar>
-          <ion-fab vertical="bottom" 	horizontal='center' slot="fixed" class="fabfooter">
-            <ion-fab-button class="fabfooterbtn">
-                <img src="../assets/imgs/middleimg.png" alt="">
-            </ion-fab-button>
-         </ion-fab>
       </ion-footer>
       
   </div>
@@ -112,9 +91,11 @@ mounted(){
          if($('.footerbgc').is(':hidden')){
             $('.footerbgc').show()
             $('.fabfooter').show()
+            $('.toobar').show()
          }else{
             $('.footerbgc').hide()
             $('.fabfooter').hide()
+            $('.toobar').hide()
          }
     },
     audioclck(){
@@ -123,6 +104,7 @@ mounted(){
          this.$router.push('/Audioconference')
     },
     videoclck(){
+           console.log('8')
          	this.$router.push({
 							name: `Videoconference`,
 							path: 'Videoconference',
@@ -130,9 +112,7 @@ mounted(){
 						   videoVlue:this.uservalue
 				     }
 			    })
-         // this.$root.bus.$emit('videocurrent', videoVlue)
-         // this.$router.push('/Videoconference')
-    },
+     },
      //
    },
   beforeDestroy() {
@@ -198,12 +178,13 @@ mounted(){
      --color:#FFFFFF;
      --color-activated:#1362FF;
    }
-  .footer{
+  .footers{
      --background:#000000;
      --border-color:#000000;
      --padding-top:0;
      --padding-bottom:0;
      --min-height:100%;
+     z-index: 999;
    }
   .footerbgc{
      width: 100%;
@@ -268,6 +249,7 @@ mounted(){
      --background:transparent;
      --color-activated:#1362FF;
      /* --background-activated:#1362FF; */
+     z-index: 999;
  }
   .videoconference{
      width: 100%;

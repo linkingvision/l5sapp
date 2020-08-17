@@ -6,11 +6,11 @@
                   <ion-row class="herderrow">
                        <ion-col>
                            <ion-label class="videolabel">
-                               <h3>视频对讲研讨会</h3>
+                               <h3>{{conferencentittlename}}</h3>
                                 <p>会议号：{{usertoken}}</p>
                            </ion-label>
                         </ion-col>
-                       <ion-col>
+                       <ion-col class="leavecol">
                           <ion-button class="videobutton"  @click="stop()">
                               <ion-label shape="round">离开</ion-label>
                            </ion-button>
@@ -62,7 +62,7 @@
         </ion-content>
         <ion-footer></ion-footer>
         <eventLists></eventLists>
-        <ion-backdrop stop-propagation="true" class="backdrop" ></ion-backdrop>
+        <ion-backdrop stop-propagation="true" class="backdropplay" ></ion-backdrop>
         <ion-fab vertical="start" horizontal="start" slot="fixed" class="camerinfo">
             <ion-content class="joincontent">
                 <div class="divmiddle">
@@ -86,7 +86,7 @@
                 </div>
             </ion-content>
         </ion-fab>
-     </div>
+    </div>
 </template>
 
 <script>
@@ -105,6 +105,7 @@ export default {
        v1:undefined,
        h5handler:undefined,
        usertoken:this.$route.params.token,
+       conferencentittlename:this.$route.params. conferencename,
        userdata:[],
        VideoCodecs: [],
        VideoCodec:"",
@@ -152,10 +153,9 @@ export default {
          
   mounted(){
        if(this.usertoken!= undefined){
-               setTimeout(()=>{
-                   this.connection()
-                },2000);
-                this.l5svideplay() 
+              this.uploadinfo()
+              this.l5svideplay() 
+                
         }else{
             this.$router.push('/Conference')
         }
@@ -216,9 +216,9 @@ export default {
           };
             console.log("播放",conf);
             
-            this.h5handler = new H5sPlayerWS(conf);
+            this.h5handler = new H5sPlayerRTC(conf);
             this.h5handler.connect( );
-            this.uploadinfo()
+           
            },
            //开启视频
         connection(){
@@ -353,7 +353,10 @@ export default {
                 delete this.v1;
                 this.v1 = undefined;
             }
-        //    this.$route.push('/Conference')
+             this.$nextTick(()=>{
+                this.$router.push('/Conference');
+             });
+
         } ,
        // 确定
        connectionbtn(){
@@ -366,12 +369,12 @@ export default {
        },
        // 显示上传信息
         uploadinfo(){
-            $('.backdrop').css('display','block')
+            $('.backdropplay').css('display','block')
             $('.camerinfo').css('display','block') 
         },
         // 取消会议模态框 、
         cancelluploadinfo(){
-            $('.backdrop').css('display','none')
+            $('.backdropplay').css('display','none')
             $('.camerinfo').css('display','none')
         },
    }
@@ -410,10 +413,11 @@ export default {
 .videocontent{
       --background:#000000;
 }
+.leavecol{
+     text-align: right;
+}
 .videobutton{
-      /* width:65px;*/
       height: 60px; 
-      margin-left: 25px;
 }
 .notifications{
       height: 40px;

@@ -6,14 +6,15 @@
                <!--最近会议-->
                <ion-list class="conference-list" lines='none'>
                     <ion-list-header lines="full" class="list-header">
-                        <ion-label>最近会议</ion-label>
+                        <ion-label class="conference-label">最近会议</ion-label>
                     </ion-list-header>  
-                    <ion-item class="conference-item"  button detail='true' lines="none" @click="mettevent(daterecent.strToken)">
+                    <ion-item class="conference-item"  button detail='false' lines="none" @click="mettevent(daterecent.strToken)">
                         <div class="recent-bacground">
                             <ion-label class="conference-itemlabel">
                                 <h3>‘视频会议’于{{daterecent.beginTime}}即将开始</h3>
                                 <p>会议号：{{daterecent.strToken}}</p>
                             </ion-label>
+                            <ion-note slot="end" class="confernote">></ion-note>
                         </div>
                     </ion-item>
                 </ion-list>
@@ -24,13 +25,13 @@
                     <ion-col size='6' class="conference-col">  
                          <ion-item class="conference-start" button lines='none' detail='false' @click="createdconference()">
                               <ion-label>创建会议</ion-label>
-                              <ion-button>+</ion-button>
+                              <ion-button shape="round" class="created-ing">+</ion-button>
                          </ion-item>
                     </ion-col>
                     <ion-col size='6' class="conference-col">
                           <ion-item class="conference-start" button lines='none' @click="openModal()">
                               <ion-label>加入会议</ion-label>
-                              <ion-button>></ion-button>
+                              <ion-button shape="round" class="created-ing">></ion-button>
                          </ion-item>
                     </ion-col>
                 </ion-row> 
@@ -58,7 +59,7 @@
                                         <ion-label color='primary' v-if="!item.bStartStatus">筹备中</ion-label>
                                     </ion-fab>
                                 </h3>
-                                <p>视频技术交流会议</p>
+                                <p class="conferencename">{{item.strName}}</p>
                                 <h4>日期：{{item.beginTime}}</h4>
                                 <h4>会议号：{{item.strToken}}</h4>
                                 <ion-fab vertical="bottom" horizontal="end" class="actrion-button">
@@ -69,17 +70,6 @@
                   </ion-item>
             </ion-list>
         </ion-content>
-         <!--底部 -->
-        <ion-footer>
-            <ion-toolbar class="footer">
-                <footertabs></footertabs>
-            </ion-toolbar>
-            <ion-fab vertical="bottom" 	horizontal='center' slot="fixed" class="fabfooter">
-                <ion-fab-button class="fabfooterbtn">
-                    <img src="../assets/imgs/middleimg.png" alt="">
-                </ion-fab-button>
-            </ion-fab>
-        </ion-footer>
         <!-- 弹窗 -->
         <div class="joinconference">
             <p class="title" lines="none">
@@ -91,7 +81,6 @@
                 <ion-button class="okeybtn" shape="round" @click="okeybtn()">确定</ion-button>
             </div>
         </div>
-        <eventLists></eventLists>
    </div>
 </template>
 <script>
@@ -124,20 +113,21 @@ export default {
                 if(result.status==200){
                     console.log(result)
                     var data=result.data.conference
-                    for(var i=0;i<data.length;i++){
+                    console.log(data)
+                   for(var i=0;i<data.length;i++){
                         if(jointoken==data[i].strToken){
                             if(data[i].bStartStatus){
-                                console.log(data[i].bStartStatus)
+                                console.log(data[i].strName)
                                 $('.joinconference').hide()
                                 this.presentLoading(jointoken)
-                                this.$nextTick(() => {
-                                    this.$router.push({
-                                        name: `Playconferce`,
-                                        path: 'Playconferce',
-                                        params: {
-                                            token:jointoken
-                                        }
-                                    })
+                                console.log(data[i].strName)
+                                this.$router.push({
+                                    name: `Playconferce`,
+                                    path: 'Playconferce',
+                                    params: {
+                                        token:jointoken,
+                                        conferencename:data[i].strName
+                                    }
                                 })
                                
                             }else{
@@ -339,8 +329,7 @@ ion-backdrop {
     margin: 0;
     --padding-start:0;
     --padding-top:0;
-    --padding-bottom:0;
-    margin: 0;
+    --padding-bottom:85px;
 }   
 .conference-list{
      background-color:#000000;
@@ -350,13 +339,16 @@ ion-backdrop {
 .list-header{
      --background:#000000;
      --color: #D3D3D3;
-     font-size: 20px;
+     font-size: 30px;
      font-weight: 600;
+}
+.conference-label{
+     font-size:30px;
 } 
 .conference-item{
      --background:#000000;
      --color:#D3D3D3;
-     --min-height:150px;
+     --min-height:210px;
      --color-activated:#1562FF !important;
      --background-activated:#1562FF;
 }
@@ -368,6 +360,12 @@ ion-backdrop {
      color: #9A9A9A;
      font-size: 16px;
 }
+.confernote{
+     position: absolute;
+     top:50%;
+     right:20px;
+     transform: translateY(-50%);
+}
 .recent-bacground{
      width:100%;
      height: 100%;
@@ -376,16 +374,22 @@ ion-backdrop {
      text-indent: 1em;
      display: flex;
      align-items: center;
+     position: relative;
 }
 .conference-col{
      --ion-grid-column-padding:25px;
 } 
+.created-ing{
+    --background:#383838;
+    width: 60px;
+    height: 60px;
+}
 .conference-start{
-     --background:#383838;
-     --min-height:65px;
+     --background:#212121;
+     --min-height:110px;
      --color:#F8F8F8;
      --border-radius:8px;
-     font-size: 16px;
+     font-size: 18px;
      --color-activated:#1562FF !important;
      --background-activated:#1562FF;
 }
@@ -424,21 +428,22 @@ ion-backdrop {
     text-align: left;
     font-weight: 600;
 }
-.action-label p{
-    font-size: 5px;
+.action-label .conferencename{
+    font-size: 18px;
     color:#F8F8F8;
     margin-bottom: 35px;
     font-weight: 600;
 }
 .action-label h4{
     color:#999999;
-    font-size: 12px;
+    font-size: 14px;
 }
 .actrion-button{
     right:60px;
 }
 .action-note{
     right: 0;
+    font-size: 18px;
 }
 .actrion-fabbtn{
     width:75px;
@@ -456,7 +461,7 @@ ion-backdrop {
     --min-height:100%;
 }
  /* 底部 */
- .footer{
+ /* .footer{
      --background:#000000;
      --border-color:#000000;
      --padding-top:0;
@@ -476,6 +481,6 @@ ion-backdrop {
      width:100%;
      height: 100%;
      /* margin-right:8px; */
- }
+ /* } */
 /* 加入会议模态框 */
 </style>

@@ -1,18 +1,23 @@
 <template>
   <div id="app">
-       <ion-app>
+      <ion-app>
           <ion-vue-router />
       </ion-app>
-    <!-- <router-view/> -->
+       <toobars v-if="$route.meta.footShow" class="toobar"></toobars>
+       <eventLists v-if="$route.meta.eventshow"></eventLists> 
   </div>
 </template>
 
 <script>
+import Toobar from '@/components/commonvue/footercommon.vue'
 export default {
   name: 'App',
+  components:{
+     'toobars':Toobar,
+  },
   data(){
     return {
-
+        
      }
   },
   mounted() {
@@ -41,5 +46,8 @@ html,body{
   color: #2c3e50;
   padding: 0;
   margin: 0;
+}
+.toobar{
+  z-index: 0;
 }
 </style>

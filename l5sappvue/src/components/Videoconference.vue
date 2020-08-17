@@ -10,7 +10,7 @@
                                 <p>会议号：{{this.$store.state.usertoken}}</p>
                            </ion-label>
                         </ion-col>
-                       <ion-col>
+                       <ion-col class="leavecol">
                           <ion-button class="videobutton"  @click="stop()">
                               <ion-label shape="round">离开</ion-label>
                            </ion-button>
@@ -61,7 +61,6 @@
               </ion-fab>
         </ion-content>
         <ion-footer></ion-footer>
-        <eventLists></eventLists>
      </div>
 </template>
 
@@ -81,6 +80,7 @@ export default {
        v1:undefined,
        h5handler:undefined,
        usertoken:this.$route.params.token,
+       camertypename:this.$route.params.camertype,
        VideoCodecs: [],
        VideoCodec:"",
        VideoIns: [],
@@ -115,7 +115,8 @@ export default {
          H5sRTCGetCapability(this.UpdateCapability)
    },
   mounted(){
-        //  this.updisplay()
+        //  this.updisplay() 
+        console.log(this.camertypename)
          let _this=this
         //  在其他的页面的值
           if(_this.usertoken!=undefined){
@@ -128,9 +129,10 @@ export default {
                _this.videocall(playVlue)
           }
         //  在本页面传过来拨打的值
-         _this.$root.bus.$on('meettoken', function(token){
-            console.log("播放",token)
+         _this.$root.bus.$on('meettoken', function(token,camertypename){
+            console.log("播放",token,camertypename)
             _this.usertoken=token
+            _this.camertypename=camertypename
             _this.l5svideplay()
          });
      },
@@ -177,7 +179,7 @@ export default {
           };
             console.log("播放",conf);
             
-            this.h5handler = new H5sPlayerWS(conf);
+            this.h5handler = new H5sPlayerRTC(conf);
             this.h5handler.connect( );
             
             // this.connection()
@@ -199,6 +201,7 @@ export default {
                     rootpath:'/', // {string} - path of the app running
                     user:this.$store.state.Useport.user, // {string} - user name
                     type:'media', // {string} - media or sharing
+                    facingmode:this.camertypename, // {string} - user or environment; desktop remove this config
                     audio: audioout,
                     callback: this.PlaybackCB, //Callback for the event
                     userdata: null, // user data
@@ -247,7 +250,7 @@ export default {
         //参数
        UpdateCapability(capability){
             console.log(capability);
-            if(capability){
+            if(capability){ 
                 console.log(capability)
                 for (let i = 0; i !== capability['videocodec'].length; ++i) {
                     const data = capability['videocodec'][i];
@@ -350,10 +353,11 @@ export default {
 .videocontent{
       --background:#000000;
 }
+.leavecol{
+     text-align: right;
+}
 .videobutton{
-      width:65px;
-      height: 25px;
-      margin-left: 25px;
+      height: 60px;
 }
 .notifications{
       height: 40px;

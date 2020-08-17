@@ -16,42 +16,66 @@ export default new IonicVueRouter({
     {
       path: '/',
       redirect: '/Login',
-      component: Loginin 
+      component: Loginin ,
+      meta:{footShow:false },
+      meta:{eventshow:false}
     },
     {
       path: '/Login',
       name: 'Loginin ',
-      component: Loginin 
+      component: Loginin ,
+      meta:{
+        footShow:false,
+        eventshow:false 
+       }
     },
     {
       path: '/Onetoonevideo',
       name: 'Onetoonevideo ',
-      component: Onetoonevideo 
+      component: Onetoonevideo ,
+      meta:{
+            footShow:true,
+            eventshow:true
+          }
     },
     {
       path: '/Audioconference',
       name: 'Audioconference ',
-      component: Audioconference
+      component: Audioconference,
+      meta:{
+            footShow:true,
+            eventshow:true
+        }
     },
     {
       path: '/Videoconference',
       name: 'Videoconference',
-      component: Videoconference
+      component: Videoconference,
+      meta:{ eventshow:true}
     },
     {
       path: '/Conference',
       name: 'Conference',
-      component: Conference
+      component: Conference,
+      meta:{
+            footShow:true,
+            eventshow:true
+          }
     },
     {
       path: '/Createdconference',
       name: 'Createdconference',
-      component: Createdconference
+      component: Createdconference,
+      meta:{
+            footShow:true,
+            eventshow:true
+        }
     },
     {
       path: '/Playconferce',
       name: 'Playconferce',
-      component: Playconferce
+      component: Playconferce,
+      meta:{ eventshow:true }
     }
   ]
 })

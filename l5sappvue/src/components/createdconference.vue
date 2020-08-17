@@ -136,7 +136,7 @@ export default {
       return{
          ocnferencename: 'Conference1',//名称
          Startdate: new Date(),//时间
-         Eendate: new Date(),//时间
+         Eendate: '',//时间
          pattern:'user',
          patterns:'apple',
          user:'',//成员
@@ -243,7 +243,12 @@ export default {
       }
    },
   mounted(){
-   this.cretedstart()
+        this.cretedstart()
+        // 结束时间默认比开始时间，多一个小时   
+        var starfs=new Date(this.Startdate).getTime();
+        var endds=new Date(this.Startdate).getTime()+3600*1000
+        var startss=new Date(endds)
+        this.Eendate=startss
   },
   methods:{
     // 初始创建会议的页面
@@ -252,15 +257,14 @@ export default {
             this.$http.get(createdurl).then(result=>{
               if(result.status==200){
                     var data=result.data.src;
-                    // console.log("***",result);
+                    console.log("***",result);
                     for(var i=0;i<data.length;i++){
                         var Role={
                             value: data[i].strToken,
                             label: data[i].strName
                         }
-
-                        this.tokendata.push(Role);
-                    }
+                    this.tokendata.push(Role);
+                  }
                 }
             })
             this.conferenceuser()
@@ -345,6 +349,9 @@ export default {
                         if(this.toppings){
                            this.mettchang(token)
                          }else{
+                          this.$nextTick(() => {
+                              this.$router.push('/Conference');
+                          })
                         const toast = document.createElement('ion-toast');
                         toast.color="primary";
                         toast.message = '创建成功';
@@ -359,9 +366,7 @@ export default {
                 //     this.mettchang(token)
                 // }
             }
-            this.$nextTick(() => {
-               this.$router.push('/Conference');
-            })
+           
          })
      },
     
@@ -377,6 +382,9 @@ export default {
                     if(this.toppings){
                         this.mettchang(token)
                     }else{
+                         this.$nextTick(() => {
+                           this.$router.push('/Conference');
+                         })
                         const toast = document.createElement('ion-toast');
                         toast.color="primary";
                         toast.message = '创建成功';
@@ -394,6 +402,9 @@ export default {
             var url = this.$store.state.callport + "/api/v1/StartConference?token="+encodeURIComponent(token)+"&session="+ this.$store.state.token;
             this.$http.get(url).then(result=>{
                 if(result.status==200){
+                     this.$nextTick(() => {
+                        this.$router.push('/Conference');
+                     })
                     const toast = document.createElement('ion-toast');
                     toast.color="success";
                     toast.message = '会议开始';
@@ -423,6 +434,7 @@ export default {
   }
 .created-content{
     --background:#000000;
+   --padding-bottom: 85px;
 }
 .created-item{
     --background:#000000;
@@ -446,7 +458,7 @@ export default {
     border-radius: 8px;
     margin-left: 30px;
     --color:#9A9A9A;
-    font-size: 8px;
+    font-size: 16px;
 }
 .created-label{
     font-size:20px;
